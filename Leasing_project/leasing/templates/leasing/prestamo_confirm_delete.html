@@ -1,0 +1,20 @@
+{% extends "leasing/base.html" %}
+{% block content %}
+    <header style="background-color:#150250" class="p-3 text-white text-center">
+        <h5 style="color: white;">Eliminar Leasing</h5>
+    </header>    
+    <div class="content-section">
+        
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Eliminar Leasing</legend>
+                <h2>¿Está seguro que desea eliminar el leasing? LAP-Sol-"{{ object.id }}"</h2>
+            </fieldset>
+            <div class="from-group" style="padding-bottom:100px;">
+                <button class="btn btn-outline-danger" type="submit">Confirmar</button>
+                <a class="btn btn-outline-secondary"  href="{% url 'prestamo-detail' object.id %}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

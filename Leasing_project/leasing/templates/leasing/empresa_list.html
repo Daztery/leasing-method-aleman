@@ -1,0 +1,34 @@
+{% extends "leasing/base.html" %}
+{% block content %}
+    <div class="container" style ="margin-bottom:100px;">
+        <header style="background-color:#150250" class="p-3 text-white text-center">
+            <h5 style="color: white;">Empresas</h5>
+        </header>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr style="background-color: #898989; color: white; text-align:center"> 
+                    <th scope="col" style="font-weight: 500;">Nombre</th>
+                    <th scope="col" style="font-weight: 500;">Razón social</th>
+                    <th scope="col" style="font-weight: 500;">Ciudad</th>
+                    <th scope="col" style="font-weight: 500;">RUC</th>
+                    <th scope="col" style="font-weight: 500;">Teléfono</th>
+                    <th scope="col" style="font-weight: 500;">Eliminar</th>
+                    <th scope="col" style="font-weight: 500;">Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for empresa in empresas %}
+            <tr style="text-align:center"> 
+                <td>{{ empresa.nombre_empresa }}</td>
+                <td>{{ empresa.razon_social }}</td>
+                <td>{{ empresa.ciudad }}</td>
+                <td>{{ empresa.ruc }}</td>
+                <td>{{ empresa.telefono }}</td>
+                <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'empresa-delete' empresa.id %}">Eliminar</a> </td>
+                <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'empresa-update' empresa.id %}">Editar</a> </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

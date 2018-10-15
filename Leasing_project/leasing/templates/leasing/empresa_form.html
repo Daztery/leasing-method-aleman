@@ -1,0 +1,20 @@
+{% extends "leasing/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <header style="background-color:#150250" class="p-3 text-white text-center">
+        <h5 style="color: white;">Nueva Empresa</h5>
+    </header>    
+    <div class="content-section">
+        
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                {{ form|crispy }}
+            </fieldset>
+            <div class="from-group" style="padding-bottom:100px;">
+                <button class="btn btn-outline-primary" type="submit">Confirmar</button>
+                <a class="btn btn-outline-danger"  href="{% url 'empresa-home' %}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

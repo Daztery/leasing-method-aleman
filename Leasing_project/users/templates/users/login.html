@@ -1,0 +1,20 @@
+{% extends "leasing/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div style="margin: 0 auto; width: 500px;">
+        <header style="background-color:#150250" class="p-3 text-center">
+                <h5 style="color: white;">Iniciar Sesión</h5>
+        </header>
+        <div class="content-section" style="display: inline-block; width: 500px; ">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    {{ form|crispy }}
+                </fieldset>
+                <div class="form-group" style="text-align: center;">
+                    <button class="btn btn-outline-info" type="submit">Ingresar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
