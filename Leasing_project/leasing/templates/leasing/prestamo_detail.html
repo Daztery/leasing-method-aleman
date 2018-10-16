@@ -31,9 +31,9 @@
                     <div class="col-md-6">
                         <h4><strong>Datos de salida: </strong></h4>
                         <h4> TCEA: {{ object.TCEA }} %</h4>
-                        <h4> Cuotas: {{ object.cuotas }} %</h4>
+                        <h4> Cuotas: {{ object.cuotas }}</h4>
                         <h4> Intereses: {{ object.Intereses }} %</h4>
-                        <h4> VAN: {{ object.VAN }} %</h4>
+                        <h4> VAN: {{ object.VAN }} S/.</h4>
                     </div>
                     <div class="col-md-6" style="margin-top:70px;">
                         <a class="btn btn-outline-primary"  href="{% url 'prestamo-update' object.id %}">Actualizar</a>

@@ -42,7 +42,7 @@ class Prestamo(models.Model):
         return self.empresa_solicitante
 
     def get_absolute_url(self):
-        return reverse('prestamo-detail', kwargs={'pk': self.pk})
+        return reverse('prestamo-tabla')
 
 
 

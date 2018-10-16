@@ -1,0 +1,50 @@
+{% extends "leasing/base.html" %}
+{% block content %}
+        <header style="background-color:#150250" class="p-3 text-white text-center">
+            <h5 style="color: white;">Método Alemán</h5>
+        </header>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr style="background-color: #898989; color: white; text-align:center"> 
+                    <th scope="col" style="font-weight: 500;">Nº</th>
+                    <th scope="col" style="font-weight: 500;">P.G.</th>
+                    <th scope="col" style="font-weight: 500;">Saldo Inicial</th>
+                    <th scope="col" style="font-weight: 500;">Interés</th>
+                    <th scope="col" style="font-weight: 500;">Cuota</th>
+                    <th scope="col" style="font-weight: 500;">Amortización</th>
+                    <th scope="col" style="font-weight: 500;">Seguro R.</th>
+                    <th scope="col" style="font-weight: 500;">Comisión</th>
+                    <th scope="col" style="font-weight: 500;">Recompra</th>
+                    <th scope="col" style="font-weight: 500;">Saldo Final</th>
+                    <th scope="col" style="font-weight: 500;">Depreciación</th>
+                    <th scope="col" style="font-weight: 500;">Ahorro Tr.</th>
+                    <th scope="col" style="font-weight: 500;">IGV</th>
+                    <th scope="col" style="font-weight: 500;">Flujo Bruto</th>
+                    <th scope="col" style="font-weight: 500;">Flujo con IGV</th>
+                    <th scope="col" style="font-weight: 500;">Flujo Neto</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for table in tables %}
+            <tr style="text-align:center"> 
+                <td>{{ table.n }}</td>
+                <td>{{ table.PG }}</td>
+                <td>{{ table.saldo_inicial }}</td>
+                <td>{{ table.interes }}</td>
+                <td>{{ table.Cuota }}</td>
+                <td>{{ table.amortizacion }}</td>
+                <td>{{ table.seguroR }}</td>
+                <td>{{ table.comision }}</td>
+                <td>{{ table.recompra }}</td>
+                <td>{{ table.saldo_final }}</td>
+                <td>{{ table.depreciacion }}</td>
+                <td>{{ table.ahorroTr }}</td>
+                <td>{{ table.IGV }}</td>
+                <td>{{ table.flujo_bruto }}</td>
+                <td>{{ table.flujo_con_igv }}</td>
+                <td>{{ table.flujo_neto }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+{% endblock content %}
