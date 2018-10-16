@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from .models import Prestamo, Empresa
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from .forms import PrestamoForm
 
 class PrestamoListView(LoginRequiredMixin, ListView):
     model = Prestamo
@@ -59,23 +60,17 @@ class PrestamoDetailView(LoginRequiredMixin, DetailView):
 
 class PrestamoCreateView(LoginRequiredMixin, CreateView):
     model = Prestamo
-    fields = ['precio_venta', 'cuota_inicial', 'empresa_ofertante', 'empresa_solicitante',
-    'tipo_de_pago', 'plazos_de_pago', 'tipo_tasa_interes', 'TEA', 'comision_rt', 'fotocopias',
-    'gastos_admin', 'fecha_inicio', 'seguro_riesgo', 'seguro_desgravamen', 'plazo_de_gracia', 
-    'modelo', 'vehiculo']
+    form_class = PrestamoForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        cuotas_mensuales = form.instance.plazos_de_pago*12
+        form.instance.TCEA = form.instance.plazos_de_pago*12
 
         return super().form_valid(form)
 
 class PrestamoUpdateView(LoginRequiredMixin, UpdateView):
     model = Prestamo
-    fields = ['precio_venta', 'cuota_inicial', 'empresa_ofertante', 'empresa_solicitante',
-    'tipo_de_pago', 'plazos_de_pago', 'tipo_tasa_interes', 'TEA', 'comision_rt', 'fotocopias',
-    'gastos_admin', 'seguro_riesgo', 'seguro_desgravamen', 'plazo_de_gracia', 
-    'modelo', 'vehiculo']
+    form_class = PrestamoForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user

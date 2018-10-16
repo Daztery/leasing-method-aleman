@@ -1,30 +1,28 @@
 {% extends "leasing/base.html" %}
 {% block content %}
-    <div class="container" style ="margin-bottom:100px;">
-        <header style="background-color:#150250" class="p-3 text-white text-center">
-            <h5 style="color: white;">Solicitudes</h5>
-        </header>
-        <table class="table table-hover table-striped">
-            <thead>
-                <tr style="background-color: #898989; color: white; text-align:center"> 
-                    <th scope="col" style="font-weight: 500;">Número de plan</th>
-                    <th scope="col" style="font-weight: 500;">Fecha de creación</th>
-                    <th scope="col" style="font-weight: 500;">Fecha de inicio</th>
-                    <th scope="col" style="font-weight: 500;">Empresa solicitante</th>
-                    <th scope="col" style="font-weight: 500;">Detalle de solicitud</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for prestamo in prestamos %}
-            <tr style="text-align:center"> 
-                <th scope="row">LAP-Sol-{{ prestamo.id }}</th>
-                <td>{{ prestamo.date_posted }}</td>
-                <td>{{ prestamo.fecha_inicio }}</td>
-                <td>{{ prestamo.empresa_solicitante }}</td>
-                <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'prestamo-detail' prestamo.id %}">ver detalle</a> </td>
+    <header style="background-color:#150250" class="p-3 text-white text-center">
+        <h5 style="color: white;">Solicitudes</h5>
+    </header>
+    <table class="table table-hover table-striped" style="margin-bottom:80px;">
+        <thead>
+            <tr style="background-color: #898989; color: white; text-align:center"> 
+                <th scope="col" style="font-weight: 500;">Número de plan</th>
+                <th scope="col" style="font-weight: 500;">Fecha de creación</th>
+                <th scope="col" style="font-weight: 500;">Fecha de inicio</th>
+                <th scope="col" style="font-weight: 500;">Empresa solicitante</th>
+                <th scope="col" style="font-weight: 500;">Detalle de solicitud</th>
             </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        </thead>
+        <tbody>
+        {% for prestamo in prestamos %}
+        <tr style="text-align:center"> 
+            <th scope="row">LAP-Sol-{{ prestamo.id }}</th>
+            <td>{{ prestamo.date_posted }}</td>
+            <td>{{ prestamo.fecha_inicio }}</td>
+            <td>{{ prestamo.empresa_solicitante.razon_social }}</td>
+            <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'prestamo-detail' prestamo.id %}">ver detalle</a> </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table> 
 {% endblock content %}

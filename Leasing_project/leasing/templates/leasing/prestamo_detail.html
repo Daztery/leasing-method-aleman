@@ -1,14 +1,13 @@
 {% extends "leasing/base.html" %}
 {% block content %}
-    <div class="container" style ="margin-bottom:100px;">
         <header style="background-color:#150250" class="p-3 text-white text-center">
             <h5 style="color: white;">Solicitud LAP-Sol-{{ object.id }}</h5>
         </header>
-        <div class="content-section">
+        <div class="content-section" style="margin-bottom:80px;">
             <div class="media">
                 <div class="media-body">
                 <h4>Empresa ofertante: {{ object.empresa_ofertante }}</h4>
-                <h4>Empresa solicitante: {{ object.empresa_solicitante }}</h4>
+                <h4>Empresa solicitante: {{ object.empresa_solicitante.razon_social }}</h4>
                 <h4>Vehículo: {{ object.vehiculo }}</h4>
                 <h4>Modelo: {{ object.modelo }}</h4>
                 <h4>Precio de venta: {{ object.precio_venta }} S/.</h4>
@@ -42,5 +41,4 @@
                 </div>
             </div>
         </div>
-    </div>
 {% endblock content %}

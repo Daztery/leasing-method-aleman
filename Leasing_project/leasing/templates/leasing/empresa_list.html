@@ -1,10 +1,9 @@
 {% extends "leasing/base.html" %}
 {% block content %}
-    <div class="container" style ="margin-bottom:100px;">
         <header style="background-color:#150250" class="p-3 text-white text-center">
             <h5 style="color: white;">Empresas</h5>
         </header>
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-striped" style="margin-bottom:80px;">
             <thead>
                 <tr style="background-color: #898989; color: white; text-align:center"> 
                     <th scope="col" style="font-weight: 500;">Nombre</th>
@@ -30,5 +29,4 @@
             {% endfor %}
             </tbody>
         </table>
-    </div>
 {% endblock content %}
