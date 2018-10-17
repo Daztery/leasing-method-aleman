@@ -11,7 +11,7 @@ class PrestamoListView(LoginRequiredMixin, ListView):
     context_object_name= 'prestamos'
 
 # EN ESTA FUNCIÓN VA LA LÓGICA DEL LEASING
-def prestamo_tabla(request):
+def prestamo_tabla(request, pk):
     
     tables = [] #Arreglo de diccionarios sobre el cual vamos a iterar
 
@@ -21,34 +21,56 @@ def prestamo_tabla(request):
 
     n = 12 #numero de meses por ejemplo de los plazos
 
+    #Variables
+
+    IGV = 0.18
+
+    impuesto_renta = 0.30
+
+    IGV_del_activo = (Prestamo.objects.filter(id=pk).first().precio_venta_del_activo/(1+IGV))*IGV
+
+    valor_de_venta_a = Prestamo.objects.filter(id=pk).first().precio_venta_del_activo - IGV_del_activo
+
+    monto_del_leasing = (valor_de_venta_a +
+    Prestamo.objects.filter(id=pk).first().costos_notariales + Prestamo.objects.filter(id=pk).first().costos_registrales +
+    Prestamo.objects.filter(id=pk).first().tasacion + Prestamo.objects.filter(id=pk).first().comision_de_estudio +
+    Prestamo.objects.filter(id=pk).first().comision_de_activacion)
+
+    TEP = (1 + Prestamo.objects.filter(id=pk).first().TEA/100)**(Prestamo.objects.filter(id=pk).first().frecuencia_de_pago/360) - 1
+
+    numero_cuotas_por_ano = 360/Prestamo.objects.filter(id=pk).first().frecuencia_de_pago
+
+    nCuotas = numero_cuotas_por_ano*Prestamo.objects.filter(id=pk).first().numero_de_años
+
     """
-        Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "Prestamo.objects.last().precio_venta", por ejemplo
+        Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "Prestamo.objects.filter(id=pk).first().precio_venta", por ejemplo
         con esto calculamos los valores de salida que salen en la tabla de método alemán
     """
 
-    for x in range(1, n + 1):
+    for x in range(1, int(nCuotas) + 1):
         campo = {}
         campo["n"] = x
-        campo["PG"] = Prestamo.objects.last().precio_venta
-        campo["saldo_inicial"] = Prestamo.objects.last().cuota_inicial
-        campo["interes"] = Prestamo.objects.last().empresa_ofertante
-        campo["Cuota"] = Prestamo.objects.last().empresa_solicitante
-        campo["amortizacion"] = Prestamo.objects.last().tipo_de_pago
-        campo["seguroR"] = Prestamo.objects.last().plazos_de_pago
-        campo["comision"] = Prestamo.objects.last().tipo_tasa_interes
-        campo["recompra"] = Prestamo.objects.last().TEA
-        campo["saldo_final"] = Prestamo.objects.last().comision_rt
-        campo["depreciacion"] = Prestamo.objects.last().fotocopias
-        campo["ahorroTr"] = Prestamo.objects.last().gastos_admin
-        campo["IGV"] = Prestamo.objects.last().fecha_inicio
-        campo["flujo_bruto"] = Prestamo.objects.last().seguro_riesgo
-        campo["flujo_con_igv"] = Prestamo.objects.last().seguro_desgravamen
-        campo["flujo_neto"] = Prestamo.objects.last().plazo_de_gracia
+        if x == 1:
+            campo["saldo_inicial"] = monto_del_leasing
+        else:
+            campo["saldo_inicial"] = tables[x-2]["saldo_final"]
+        campo["interes"] = (campo["saldo_inicial"]*-1)*TEP
+        campo["amortizacion"] = (campo["saldo_inicial"]*-1)/(nCuotas-x+1)
+        campo["Cuota"] = campo["interes"] + campo["amortizacion"]
+        campo["saldo_final"] = campo["saldo_inicial"] + campo["amortizacion"]
 
         tables.append(campo)
 
+    query = request.GET.get("nPeriodo")
+    valor = ""
+    if query:
+        valor = "s"
+
     context = {
-        'tables': tables
+        'tables': tables,
+        'pk': pk,
+        'query': query,
+        'valor': valor
     }
 
     return render(request, 'leasing/prestamo_tabla.html', context)
@@ -64,8 +86,6 @@ class PrestamoCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.TCEA = form.instance.plazos_de_pago*12
-
         return super().form_valid(form)
 
 class PrestamoUpdateView(LoginRequiredMixin, UpdateView):

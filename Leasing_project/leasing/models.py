@@ -27,24 +27,27 @@ tipo_TI = (
 )
 
 class Prestamo(models.Model):
-    precio_venta = models.DecimalField(max_digits=11, decimal_places=4)
-    cuota_inicial = models.DecimalField(max_digits=11, decimal_places=4)
     empresa_ofertante = models.CharField(max_length=100)
     empresa_solicitante = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+    precio_venta_del_activo = models.FloatField(null=True)
+    numero_de_años = models.IntegerField(null=True)
+    frecuencia_de_pago = models.IntegerField()
     tipo_de_pago = models.CharField(max_length=20, choices=tipo_pago, default='Efectivo')
-    plazos_de_pago = models.IntegerField()
     tipo_tasa_interes = models.CharField(max_length=20, choices=tipo_TI, default='TEA')
-    TEA = models.DecimalField(max_digits=7, decimal_places=4)
-    TCEA = models.DecimalField(max_digits=7, decimal_places=4, null=True)
-    cuotas = models.IntegerField(null=True)
-    intereses = models.DecimalField(max_digits=9, decimal_places=4, null=True)
-    VAN = models.DecimalField(max_digits=11, decimal_places=4, null=True)
-    comision_rt = models.DecimalField(max_digits=9, decimal_places=4)
-    fotocopias = models.DecimalField(max_digits=9, decimal_places=4)
-    gastos_admin = models.DecimalField(max_digits=9, decimal_places=4)
+    TEA = models.FloatField(null=True)
+    recompra = models.FloatField(null=True)
+    costos_notariales = models.FloatField(null=True)
+    costos_registrales = models.FloatField(null=True)
+    tasacion = models.FloatField(null=True)
+    comision_de_estudio = models.FloatField(null=True)
+    comision_de_activacion = models.FloatField(null=True)
+    comision_periodica = models.FloatField(null=True)
+    seguro_riesgo = models.FloatField(null=True)
+    TCEA = models.FloatField(null=True)
+    cuotas = models.FloatField(null=True)
+    intereses = models.FloatField(null=True)
+    VAN = models.FloatField(null=True)
     fecha_inicio = models.DateTimeField(default=datetime.now, blank=True)
-    seguro_riesgo = models.DecimalField(max_digits=7, decimal_places=4)
-    seguro_desgravamen = models.DecimalField(max_digits=7, decimal_places=4)
     plazo_de_gracia = models.IntegerField()
     date_posted = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -55,7 +58,7 @@ class Prestamo(models.Model):
         return self.empresa_solicitante
 
     def get_absolute_url(self):
-        return reverse('prestamo-tabla')
+        return reverse('prestamo-tabla', kwargs={'pk': self.pk})
 
 
 

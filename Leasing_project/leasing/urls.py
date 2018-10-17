@@ -13,7 +13,7 @@ from . import views
 
 urlpatterns = [
     path('', PrestamoListView.as_view(), name='leasing-home'),
-    path('prestamo/tabla/', views.prestamo_tabla, name='prestamo-tabla'),
+    path('prestamo/tabla/<int:pk>/', views.prestamo_tabla, name='prestamo-tabla'),
     path('prestamo/<int:pk>/', PrestamoDetailView.as_view(), name='prestamo-detail'),
     path('prestamo/new/', PrestamoCreateView.as_view(), name='prestamo-create'),
     path('prestamo/<int:pk>/update', PrestamoUpdateView.as_view(), name='prestamo-update'),
