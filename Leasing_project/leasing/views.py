@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from .models import Prestamo, Empresa
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .forms import PrestamoForm
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, landscape
 
 class PrestamoListView(LoginRequiredMixin, ListView):
     model = Prestamo
@@ -16,10 +18,6 @@ def prestamo_tabla(request, pk):
     tables = [] #Arreglo de diccionarios sobre el cual vamos a iterar
 
     #Al crear un nuevo leasing nos traerá automáticamente a esta función
-
-    #Ejemplo de como tomar los atributos de los valores de entrada del leasing
-
-    n = 12 #numero de meses por ejemplo de los plazos
 
     #Variables
 
@@ -47,6 +45,8 @@ def prestamo_tabla(request, pk):
         con esto calculamos los valores de salida que salen en la tabla de método alemán
     """
 
+    # Llenamos la tabla con las variables calculadas
+
     for x in range(1, int(nCuotas) + 1):
         campo = {}
         campo["n"] = x
@@ -61,16 +61,43 @@ def prestamo_tabla(request, pk):
 
         tables.append(campo)
 
+    #Guardar periodo elegido en formato pdf
+
+    year = Prestamo.objects.filter(id=pk).first().fecha_inicio.year
+    month = Prestamo.objects.filter(id=pk).first().fecha_inicio.month
+    day = Prestamo.objects.filter(id=pk).first().fecha_inicio.day
+
     query = request.GET.get("nPeriodo")
     valor = ""
     if query:
         valor = "s"
+        iType = "submit"
+    else:
+        iType = "hidden"
+        
+    if 'PDF' in request.POST:
+        for x in range(1, int(nCuotas) + 1):
+            if tables[x-1]["n"] == int(query):
+                c = canvas.Canvas("LAP-" + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + "-" +
+                str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
+                c.setFont('Helvetica', 48, leading=None)
+                c.drawCentredString(415, 500, "Empresa: " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social))
+                c.setFont('Helvetica', 20, leading=None)
+                c.drawString(100, 400, "Periodo: " + str(tables[x-1]["n"]))
+                c.drawString(100, 350, "Saldo inicial: " + str(tables[x-1]["saldo_inicial"]))
+                c.drawString(100, 300, "Interés: " + str(tables[x-1]["interes"]))
+                c.drawString(100, 250, "Amortización: " + str(tables[x-1]["amortizacion"]))
+                c.drawString(100, 200, "Cuota: " + str(tables[x-1]["Cuota"]))
+                c.drawString(100, 150, "Saldo final: " + str(tables[x-1]["saldo_final"]))
+                c.save()
+        
 
     context = {
         'tables': tables,
         'pk': pk,
         'query': query,
-        'valor': valor
+        'valor': valor,
+        'iType': iType
     }
 
     return render(request, 'leasing/prestamo_tabla.html', context)
