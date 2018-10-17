@@ -18,7 +18,7 @@
         <tr style="text-align:center"> 
             <th scope="row">LAP-Sol-{{ prestamo.id }}</th>
             <td>{{ prestamo.date_posted }}</td>
-            <td>{{ prestamo.fecha_inicio }}</td>
+            <td>{{ prestamo.fecha_inicio|date:"D d M Y" }}</td>
             <td>{{ prestamo.empresa_solicitante.razon_social }}</td>
             <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'prestamo-detail' prestamo.id %}">ver detalle</a> </td>
         </tr>

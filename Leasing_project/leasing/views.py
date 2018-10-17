@@ -78,7 +78,7 @@ def prestamo_tabla(request, pk):
     if 'PDF' in request.POST:
         for x in range(1, int(nCuotas) + 1):
             if tables[x-1]["n"] == int(query):
-                c = canvas.Canvas("LAP-" + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + "-" +
+                c = canvas.Canvas("LAP-Sol-" + str(Prestamo.objects.filter(id=pk).first().id) + " " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + "-" +
                 str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
                 c.setFont('Helvetica', 48, leading=None)
                 c.drawCentredString(415, 500, "Empresa: " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social))
