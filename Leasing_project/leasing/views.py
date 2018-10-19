@@ -7,6 +7,8 @@ from .forms import PrestamoForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
 from django.contrib import messages
+from PyPDF2 import PdfFileMerger
+import os
 
 class PrestamoListView(LoginRequiredMixin, ListView):
     model = Prestamo
@@ -27,23 +29,26 @@ def prestamo_tabla(request, pk):
 
     impuesto_renta = 0.30
 
-    IGV_del_activo = (Prestamo.objects.filter(id=pk).first().precio_venta_del_activo/(1+IGV))*IGV
+    prestamo = Prestamo.objects.filter(id=pk).first()
 
-    valor_de_venta_a = Prestamo.objects.filter(id=pk).first().precio_venta_del_activo - IGV_del_activo
+    IGV_del_activo = (prestamo.precio_venta_del_activo/(1+IGV))*IGV
+
+    valor_de_venta_a = prestamo.precio_venta_del_activo - IGV_del_activo
+
 
     monto_del_leasing = (valor_de_venta_a +
-    Prestamo.objects.filter(id=pk).first().costos_notariales + Prestamo.objects.filter(id=pk).first().costos_registrales +
-    Prestamo.objects.filter(id=pk).first().tasacion + Prestamo.objects.filter(id=pk).first().comision_de_estudio +
-    Prestamo.objects.filter(id=pk).first().comision_de_activacion)
+    prestamo.costos_notariales + prestamo.costos_registrales +
+    prestamo.tasacion + prestamo.comision_de_estudio +
+    prestamo.comision_de_activacion)
 
-    TEP = (1 + Prestamo.objects.filter(id=pk).first().TEA/100)**(Prestamo.objects.filter(id=pk).first().frecuencia_de_pago/360) - 1
+    TEP = (1 + prestamo.TEA/100)**(prestamo.frecuencia_de_pago/360) - 1
 
-    numero_cuotas_por_ano = 360/Prestamo.objects.filter(id=pk).first().frecuencia_de_pago
+    numero_cuotas_por_ano = 360/prestamo.frecuencia_de_pago
 
-    nCuotas = numero_cuotas_por_ano*Prestamo.objects.filter(id=pk).first().numero_de_años
+    nCuotas = numero_cuotas_por_ano*prestamo.numero_de_años
 
     """
-        Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "Prestamo.objects.filter(id=pk).first().precio_venta", por ejemplo
+        Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "prestamo.precio_venta", por ejemplo
         con esto calculamos los valores de salida que salen en la tabla de método alemán
     """
 
@@ -65,9 +70,9 @@ def prestamo_tabla(request, pk):
 
     #Guardar periodo elegido en formato pdf
 
-    year = Prestamo.objects.filter(id=pk).first().fecha_inicio.year
-    month = Prestamo.objects.filter(id=pk).first().fecha_inicio.month
-    day = Prestamo.objects.filter(id=pk).first().fecha_inicio.day
+    year = prestamo.fecha_inicio.year
+    month = prestamo.fecha_inicio.month
+    day = prestamo.fecha_inicio.day
 
     query = request.POST.get("nPeriodo")
     periodoI = request.POST.get("periodoI")
@@ -90,20 +95,44 @@ def prestamo_tabla(request, pk):
         periodoIPDF = request.POST.get("periodoIPDF")
         periodoFPDF = request.POST.get("periodoFPDF")
 
-        for x in range(1, int(nCuotas) + 1):
-            if nPeriodoPDF is None: continue
-            else:
+        if periodoIPDF == "None" and periodoFPDF == "None":
+            mess = "-Pu"
+            for x in range(1, int(nCuotas) + 1):
                 if tables[x-1]["n"] == int(nPeriodoPDF):
-                    iterarPDF(year, month, day, tables, pk, x)
-        messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess)
+            messages.success(request, f'¡Se ha guardado PDF exitósamente!')
 
-        if periodoIPDF is None and periodoFPDF is None: return
-        for x in range(1, int(nCuotas) + 1):  
+        if nPeriodoPDF == "None":
+            mess = ""
+            path = "/Users/DOMINIC/Desktop/UPC VI/FINANZAS/Trabajo parcial/leasingApp/Final-Project-Finance/Leasing_project/"
+            pdf_files = []
+            num = 1
 
+            for x in range(1, int(nCuotas) + 1):  
                 if tables[x-1]["n"] >= int(periodoIPDF) and tables[x-1]["n"] <= int(periodoFPDF):
-                    iterarPDF(year, month, day, tables, pk, x)
+                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess)
+                    pdf_files.append("LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
+                    str(year) + "-" + str(month) + "-" + str(day) + ".pdf")  
 
-        messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+            messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+
+            merger = PdfFileMerger()
+            for files in pdf_files:
+                merger.append(path+files)
+            
+            while os.path.exists(path + "LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-consolidado-" + str(num) + " " +
+            str(year) + "-" + str(month) + "-" + str(day) + ".pdf"):
+                num += 1
+                
+            merger.write(path + "LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-consolidado-" + str(num) + " " +
+            str(year) + "-" + str(month) + "-" + str(day) + ".pdf")
+            merger.close()
+    
+            for x in range(1, int(nCuotas) + 1):  
+                if tables[x-1]["n"] >= int(periodoIPDF) and tables[x-1]["n"] <= int(periodoFPDF):
+                    os.remove(path+"LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
+                    str(year) + "-" + str(month) + "-" + str(day) + ".pdf")  
+
 
     context = {
         'tables': tables,
@@ -120,11 +149,12 @@ def prestamo_tabla(request, pk):
 
     #Puede ser beno crear una tabla para guardar estos resultados, puesto que solo se generan al momento de crear un nuevo leasing y no son persistentes.
 
-def iterarPDF(year, month, day, tables, pk, x):
-    c = canvas.Canvas("LAP-Sol-" + str(Prestamo.objects.filter(id=pk).first().id) + " " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + "-" +
+def iterarPDF(year, month, day, tables, pk, x, prestamo, mess):
+    
+    c = canvas.Canvas("LAP-Sol-" + str(prestamo.id) + mess + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
     str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
     c.setFont('Helvetica', 48, leading=None)
-    c.drawCentredString(415, 500, "Empresa: " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social))
+    c.drawCentredString(415, 500, "Empresa: " + str(prestamo.empresa_solicitante.razon_social))
     c.setFont('Helvetica', 20, leading=None)
     c.drawString(100, 400, "Periodo: " + str(tables[x-1]["n"]))
     c.drawString(100, 350, "Saldo inicial: " + str(tables[x-1]["saldo_inicial"]))
