@@ -1,14 +1,30 @@
 {% extends "leasing/base.html" %}
 {% block content %}
 
-<form style="margin-bottom:20px;" method='GET' action=''>
-    Buscar periodo:<br>
-    <input style="width:40px;" type="number" name="nPeriodo">
-    <br>
-    <br>
-    <input class="btn btn-outline-primary" type="submit" name= "buscar" value="buscar">
-    <a class="btn btn-outline-primary"  href="{% url 'prestamo-update' pk %}">Editar</a>
-</form>
+<div class="row">
+    <div class ="col-4">
+        <form style="margin-bottom:20px;" method='POST' action=''>
+            {% csrf_token %}
+            Buscar periodo:<br>
+            <input style="width:40px;" type="number" name="nPeriodo">
+            <br>
+            <br>
+            <input class="btn btn-outline-primary" type="submit" name= "buscar" value="buscar">
+            <a class="btn btn-outline-primary"  href="{% url 'prestamo-update' pk %}">Editar</a>
+        </form>
+    </div>
+    <div class ="col-8">
+        <form style="margin-bottom:20px;" method='POST' action=''>
+            {% csrf_token %}
+            Filtrar entre periodos:<br>
+            <input style="width:40px; margin-right:20px;" type="number" name="periodoI">
+            <input style="width:40px;" type="number" name="periodoF">
+            <br>
+            <br>
+            <input class="btn btn-outline-primary" type="submit" name= "filtrar" value="filtrar">
+        </form>
+    </div>
+</div>
 
 <header style="background-color:#150250;" class="p-3 text-white text-center">
     <h5 style="color: white;">Flujo de caja por Método Alemán</h5>
@@ -27,7 +43,15 @@
     <tbody>
     {% for table in tables %}
     <tr style="text-align:center"> 
-        {% if query == table.n|stringformat:"i" %}
+        {% if table.n in numPeriodos %}
+            <td>{{ table.n }}</td>
+            <td>{{ table.saldo_inicial|floatformat:2 }}</td>
+            <td>{{ table.interes|floatformat:2 }}</td>
+            <td>{{ table.Cuota|floatformat:2 }}</td>
+            <td>{{ table.amortizacion|floatformat:2 }}</td>
+            <td>{{ table.saldo_final|floatformat:2 }}</td>
+
+        {% elif query == table.n|stringformat:"i" %}
             <td>{{ table.n }}</td>
             <td>{{ table.saldo_inicial|floatformat:2 }}</td>
             <td>{{ table.interes|floatformat:2 }}</td>
@@ -47,8 +71,11 @@
     </tbody>
 </table>
 
-<form style="" method='POST' action=''>
+<form style="margin-bottom:80px;" method='POST' action=''>
     {% csrf_token %}
+    <input style="width:40px; margin-right:20px;" type="hidden" value="{{ periodoI }}" name="periodoIPDF">
+    <input style="width:40px;" type="hidden" value="{{ periodoF }}" name="periodoFPDF">
+    <input style="width:40px;" type="hidden" value="{{ query }}"  name="nPeriodoPDF">
     <input type="{{ iType }}" class="btn btn-outline-primary" name= "PDF" value="Guardar PDF">
 </form>  
 {% endblock content %}

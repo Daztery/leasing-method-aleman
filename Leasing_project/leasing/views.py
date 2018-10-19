@@ -6,6 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import PrestamoForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
+from django.contrib import messages
 
 class PrestamoListView(LoginRequiredMixin, ListView):
     model = Prestamo
@@ -13,6 +14,7 @@ class PrestamoListView(LoginRequiredMixin, ListView):
     context_object_name= 'prestamos'
 
 # EN ESTA FUNCIÓN VA LA LÓGICA DEL LEASING
+
 def prestamo_tabla(request, pk):
     
     tables = [] #Arreglo de diccionarios sobre el cual vamos a iterar
@@ -67,42 +69,70 @@ def prestamo_tabla(request, pk):
     month = Prestamo.objects.filter(id=pk).first().fecha_inicio.month
     day = Prestamo.objects.filter(id=pk).first().fecha_inicio.day
 
-    query = request.GET.get("nPeriodo")
+    query = request.POST.get("nPeriodo")
+    periodoI = request.POST.get("periodoI")
+    periodoF = request.POST.get("periodoF")
+
+    numPeriodos = ""
     valor = ""
-    if query:
+
+    if 'buscar' in request.POST or 'filtrar' in request.POST and periodoI != "" and periodoF != "":
         valor = "s"
-        iType = "submit"
+        iType = "submit"  
     else:
-        iType = "hidden"
+        iType = "hidden"    
+
+    if 'filtrar' in request.POST and periodoI != "" and periodoF != "": #Filtramos entre periodos
+        numPeriodos = range(int(periodoI), int(periodoF)+1)
         
     if 'PDF' in request.POST:
+        nPeriodoPDF = request.POST.get("nPeriodoPDF")
+        periodoIPDF = request.POST.get("periodoIPDF")
+        periodoFPDF = request.POST.get("periodoFPDF")
+
         for x in range(1, int(nCuotas) + 1):
-            if tables[x-1]["n"] == int(query):
-                c = canvas.Canvas("LAP-Sol-" + str(Prestamo.objects.filter(id=pk).first().id) + " " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + "-" +
-                str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
-                c.setFont('Helvetica', 48, leading=None)
-                c.drawCentredString(415, 500, "Empresa: " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social))
-                c.setFont('Helvetica', 20, leading=None)
-                c.drawString(100, 400, "Periodo: " + str(tables[x-1]["n"]))
-                c.drawString(100, 350, "Saldo inicial: " + str(tables[x-1]["saldo_inicial"]))
-                c.drawString(100, 300, "Interés: " + str(tables[x-1]["interes"]))
-                c.drawString(100, 250, "Amortización: " + str(tables[x-1]["amortizacion"]))
-                c.drawString(100, 200, "Cuota: " + str(tables[x-1]["Cuota"]))
-                c.drawString(100, 150, "Saldo final: " + str(tables[x-1]["saldo_final"]))
-                c.save()
-        
+            if nPeriodoPDF is None: continue
+            else:
+                if tables[x-1]["n"] == int(nPeriodoPDF):
+                    iterarPDF(year, month, day, tables, pk, x)
+        messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+
+        if periodoIPDF is None and periodoFPDF is None: return
+        for x in range(1, int(nCuotas) + 1):  
+
+                if tables[x-1]["n"] >= int(periodoIPDF) and tables[x-1]["n"] <= int(periodoFPDF):
+                    iterarPDF(year, month, day, tables, pk, x)
+
+        messages.success(request, f'¡Se ha guardado PDF exitósamente!')
 
     context = {
         'tables': tables,
         'pk': pk,
         'query': query,
         'valor': valor,
-        'iType': iType
+        'iType': iType,
+        'numPeriodos': numPeriodos,
+        'periodoI': periodoI,
+        'periodoF': periodoF
     }
 
     return render(request, 'leasing/prestamo_tabla.html', context)
 
-    #Puede ser bueno crear una tabla para guardar estos resultados, puesto que solo se generan al momento de crear un nuevo leasing y no son persistentes.
+    #Puede ser beno crear una tabla para guardar estos resultados, puesto que solo se generan al momento de crear un nuevo leasing y no son persistentes.
+
+def iterarPDF(year, month, day, tables, pk, x):
+    c = canvas.Canvas("LAP-Sol-" + str(Prestamo.objects.filter(id=pk).first().id) + " " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + "-" +
+    str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
+    c.setFont('Helvetica', 48, leading=None)
+    c.drawCentredString(415, 500, "Empresa: " + str(Prestamo.objects.filter(id=pk).first().empresa_solicitante.razon_social))
+    c.setFont('Helvetica', 20, leading=None)
+    c.drawString(100, 400, "Periodo: " + str(tables[x-1]["n"]))
+    c.drawString(100, 350, "Saldo inicial: " + str(tables[x-1]["saldo_inicial"]))
+    c.drawString(100, 300, "Interés: " + str(tables[x-1]["interes"]))
+    c.drawString(100, 250, "Amortización: " + str(tables[x-1]["amortizacion"]))
+    c.drawString(100, 200, "Cuota: " + str(tables[x-1]["Cuota"]))
+    c.drawString(100, 150, "Saldo final: " + str(tables[x-1]["saldo_final"]))
+    c.save()
 
 class PrestamoDetailView(LoginRequiredMixin, DetailView):
     model = Prestamo
