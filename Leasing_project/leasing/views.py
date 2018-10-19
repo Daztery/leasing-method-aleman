@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from .models import Prestamo, Empresa
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import PrestamoForm
+from .forms import PrestamoForm, PrestamoForm1, PrestamoForm2
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
 from django.contrib import messages
@@ -81,7 +81,7 @@ def prestamo_tabla(request, pk):
     numPeriodos = ""
     valor = ""
 
-    if 'buscar' in request.POST or 'filtrar' in request.POST and periodoI != "" and periodoF != "":
+    if 'buscar' in request.POST and query != "" or 'filtrar' in request.POST and periodoI != "" and periodoF != "":
         valor = "s"
         iType = "submit"  
     else:
@@ -95,36 +95,55 @@ def prestamo_tabla(request, pk):
         periodoIPDF = request.POST.get("periodoIPDF")
         periodoFPDF = request.POST.get("periodoFPDF")
 
+        #Creamos el path
+
+        nestedPath = ""
+        path = "/Users/DOMINIC/Desktop/UPC VI/FINANZAS/Trabajo parcial/leasingApp/Final-Project-Finance/Leasing_project/"
+
+        nestedPath = path + "LeasingPDF/" + str(prestamo.empresa_solicitante.razon_social + "/")
+
+        if not os.path.exists(nestedPath): 
+            os.makedirs(nestedPath)
+
+        #Por periodo unico
+
         if periodoIPDF == "None" and periodoFPDF == "None":
             mess = "-Pu"
+
+            if not os.path.exists(nestedPath + "periodo/"): 
+                os.makedirs(nestedPath + "periodo/")
+
             for x in range(1, int(nCuotas) + 1):
                 if tables[x-1]["n"] == int(nPeriodoPDF):
-                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess)
+                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess, nestedPath + "periodo/")
+
             messages.success(request, f'¡Se ha guardado PDF exitósamente!')
 
-        if nPeriodoPDF == "None":
+        #Consolidado
+
+        if nPeriodoPDF == "None": 
             mess = ""
-            path = "/Users/DOMINIC/Desktop/UPC VI/FINANZAS/Trabajo parcial/leasingApp/Final-Project-Finance/Leasing_project/"
             pdf_files = []
             num = 1
 
             for x in range(1, int(nCuotas) + 1):  
                 if tables[x-1]["n"] >= int(periodoIPDF) and tables[x-1]["n"] <= int(periodoFPDF):
-                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess)
+                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess, path)
                     pdf_files.append("LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
                     str(year) + "-" + str(month) + "-" + str(day) + ".pdf")  
-
-            messages.success(request, f'¡Se ha guardado PDF exitósamente!')
 
             merger = PdfFileMerger()
             for files in pdf_files:
                 merger.append(path+files)
+
+            if not os.path.exists(nestedPath + "consolidado/"): 
+                os.makedirs(nestedPath + "consolidado/")
             
-            while os.path.exists(path + "LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-consolidado-" + str(num) + " " +
+            while os.path.exists(nestedPath + "consolidado/" + "LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-consolidado-" + str(num) + " " +
             str(year) + "-" + str(month) + "-" + str(day) + ".pdf"):
                 num += 1
-                
-            merger.write(path + "LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-consolidado-" + str(num) + " " +
+
+            merger.write(nestedPath + "consolidado/" + "LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-consolidado-" + str(num) + " " +
             str(year) + "-" + str(month) + "-" + str(day) + ".pdf")
             merger.close()
     
@@ -133,10 +152,12 @@ def prestamo_tabla(request, pk):
                     os.remove(path+"LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
                     str(year) + "-" + str(month) + "-" + str(day) + ".pdf")  
 
+            messages.success(request, f'¡Se ha guardado PDF exitósamente!')
 
     context = {
         'tables': tables,
         'pk': pk,
+        'prestamo': prestamo,
         'query': query,
         'valor': valor,
         'iType': iType,
@@ -149,9 +170,9 @@ def prestamo_tabla(request, pk):
 
     #Puede ser beno crear una tabla para guardar estos resultados, puesto que solo se generan al momento de crear un nuevo leasing y no son persistentes.
 
-def iterarPDF(year, month, day, tables, pk, x, prestamo, mess):
+def iterarPDF(year, month, day, tables, pk, x, prestamo, mess, path):
     
-    c = canvas.Canvas("LAP-Sol-" + str(prestamo.id) + mess + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
+    c = canvas.Canvas(path + "LAP-Sol-" + str(prestamo.id) + mess + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
     str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
     c.setFont('Helvetica', 48, leading=None)
     c.drawCentredString(415, 500, "Empresa: " + str(prestamo.empresa_solicitante.razon_social))

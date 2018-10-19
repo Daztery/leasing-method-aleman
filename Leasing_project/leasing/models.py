@@ -26,12 +26,20 @@ tipo_TI = (
     ('TNA', 'TNA')
 )
 
+frec_pago = (
+    (30, 'Mensual'),
+    (60, 'Bimestral'),
+    (90, 'Trimestral'),
+    (120, 'Cuatrimestral'),
+    (180, 'Semestral'),
+)
+
 class Prestamo(models.Model):
     empresa_ofertante = models.CharField(max_length=100)
     empresa_solicitante = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     precio_venta_del_activo = models.FloatField(null=True)
     numero_de_años = models.IntegerField(null=True)
-    frecuencia_de_pago = models.IntegerField()
+    frecuencia_de_pago = models.IntegerField(choices=frec_pago, default=30)
     tipo_de_pago = models.CharField(max_length=20, choices=tipo_pago, default='Efectivo')
     tipo_tasa_interes = models.CharField(max_length=20, choices=tipo_TI, default='TEA')
     TEA = models.FloatField(null=True)
