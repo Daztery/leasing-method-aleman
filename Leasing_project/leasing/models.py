@@ -34,6 +34,16 @@ frec_pago = (
     (180, 'Semestral'),
 )
 
+plazo_g = (
+    (0, 'sin plazo de gracia'),
+    (30, '1 mes'),
+    (60, '2 meses'),
+    (90, '3 meses'),
+    (120, '4 meses'),
+    (150, '5 meses'),
+    (180, '6 meses'),
+)
+
 class Prestamo(models.Model):
     empresa_ofertante = models.CharField(max_length=100)
     empresa_solicitante = models.ForeignKey(Empresa, on_delete=models.CASCADE)
@@ -56,7 +66,9 @@ class Prestamo(models.Model):
     intereses = models.FloatField(null=True)
     VAN = models.FloatField(null=True)
     fecha_inicio = models.DateTimeField(default=datetime.now, blank=True)
-    plazo_de_gracia = models.IntegerField()
+    plazo_de_gracia = models.IntegerField(choices=plazo_g, default=30)
+    tasa_descuento_Ks = models.FloatField(null=True)
+    tasa_descuento_WACC = models.FloatField(null=True)
     date_posted = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     modelo = models.CharField(max_length=100, null=True)

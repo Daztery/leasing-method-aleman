@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_numpy',
     'users.apps.UsersConfig',
     'crispy_forms',
     'leasing.apps.LeasingConfig',

@@ -9,6 +9,7 @@ from reportlab.lib.pagesizes import letter, landscape
 from django.contrib import messages
 from PyPDF2 import PdfFileMerger
 import os
+import numpy as np
 
 class PrestamoListView(LoginRequiredMixin, ListView):
     model = Prestamo
@@ -47,6 +48,24 @@ def prestamo_tabla(request, pk):
 
     nCuotas = numero_cuotas_por_ano*prestamo.numero_de_años
 
+    # de los costes/gastos periodicos
+    s_riesgo = (prestamo.seguro_riesgo/100)*(prestamo.precio_venta_del_activo/numero_cuotas_por_ano) 
+
+    # … totales por …
+    intereses = 0
+    amortizacion_c = 0
+    seguro_ctr = 0
+    comisiones_p = 0
+    recompra_t = 0
+    desembolso_t = 0
+
+    #de Indicadores de Rentabilidad
+    tasa_desc = (1+prestamo.tasa_descuento_Ks)**(prestamo.frecuencia_de_pago/360) - 1
+
+    VAN_fb = 0
+    VAN_fn = 0
+    flujo_br = []
+
     """
         Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "prestamo.precio_venta", por ejemplo
         con esto calculamos los valores de salida que salen en la tabla de método alemán
@@ -65,9 +84,38 @@ def prestamo_tabla(request, pk):
         campo["amortizacion"] = (campo["saldo_inicial"]*-1)/(nCuotas-x+1)
         campo["Cuota"] = campo["interes"] + campo["amortizacion"]
         campo["saldo_final"] = campo["saldo_inicial"] + campo["amortizacion"]
+        campo["seguro_riesgo"] = s_riesgo*-1
+        campo["comision"] = (prestamo.comision_periodica)*-1
+        if x == int(nCuotas):
+            campo["recompra"] = ((prestamo.recompra/100)*valor_de_venta_a)*-1
+        else:
+            campo["recompra"] = 0
+        campo["depreciacion"] = (valor_de_venta_a/nCuotas)*-1
+        campo["ahorro_t"] = (campo["interes"] + campo["seguro_riesgo"] + campo["comision"] + campo["depreciacion"])*impuesto_renta
+        campo["igv"] = (campo["Cuota"] + campo["seguro_riesgo"] + campo["comision"] + campo["recompra"])*IGV
+        campo["flujo_b"] = campo["Cuota"] + campo["seguro_riesgo"] + campo["comision"] + campo["recompra"]
+        campo["flujo_igv"] = campo["igv"] + campo["flujo_b"]
+        campo["flujo_neto"] = campo["flujo_b"] - campo["ahorro_t"]
+
+        intereses = campo["interes"] + intereses
+        amortizacion_c = campo["amortizacion"] + amortizacion_c
+        seguro_ctr = campo["seguro_riesgo"] + seguro_ctr
+        comisiones_p = campo["comision"] + comisiones_p
+        recompra_t = recompra_t + campo["recompra"]
+        flujo_br.append(campo["flujo_b"])
 
         tables.append(campo)
 
+    intereses = intereses*-1
+    amortizacion_c = amortizacion_c*-1
+    seguro_ctr = seguro_ctr*-1
+    comisiones_p = comisiones_p*-1
+    recompra_t =recompra_t*-1
+    desembolso_t = intereses + amortizacion_c + seguro_ctr + comisiones_p + recompra_t
+    
+    VAN_fb = monto_del_leasing + np.npv(tasa_desc, flujo_br)
+    print(desembolso_t)
+    print(VAN_fb)
     #Guardar periodo elegido en formato pdf
 
     year = prestamo.fecha_inicio.year

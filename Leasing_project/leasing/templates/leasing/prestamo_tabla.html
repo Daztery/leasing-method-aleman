@@ -44,7 +44,16 @@
             <th scope="col" style="font-weight: 500;">Interés</th>
             <th scope="col" style="font-weight: 500;">Cuota</th>
             <th scope="col" style="font-weight: 500;">Amortización</th>
+            <th scope="col" style="font-weight: 500;">Seguro riesgo</th>
+            <th scope="col" style="font-weight: 500;">Comisión</th>
+            <th scope="col" style="font-weight: 500;">Recompra</th>
             <th scope="col" style="font-weight: 500;">Saldo Final</th>
+            <th scope="col" style="font-weight: 500;">Depreciación</th>
+            <th scope="col" style="font-weight: 500;">Ahorro tributario</th>
+            <th scope="col" style="font-weight: 500;">IGV</th>
+            <th scope="col" style="font-weight: 500;">Flujo bruto</th>
+            <th scope="col" style="font-weight: 500;">Flujo IGV</th>
+            <th scope="col" style="font-weight: 500;">Flujo neto</th>
         </tr>
     </thead>
     <tbody>
@@ -56,7 +65,16 @@
             <td>{{ table.interes|floatformat:2 }}</td>
             <td>{{ table.Cuota|floatformat:2 }}</td>
             <td>{{ table.amortizacion|floatformat:2 }}</td>
+            <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
+            <td>{{ table.comision|floatformat:2 }}</td>
+            <td>{{ table.recompra|floatformat:2 }}</td>
             <td>{{ table.saldo_final|floatformat:2 }}</td>
+            <td>{{ table.depreciacion|floatformat:2 }}</td>
+            <td>{{ table.ahorro_t|floatformat:2 }}</td>
+            <td>{{ table.igv|floatformat:2 }}</td>
+            <td>{{ table.flujo_b|floatformat:2 }}</td>
+            <td>{{ table.flujo_igv|floatformat:2 }}</td>
+            <td>{{ table.flujo_neto|floatformat:2 }}</td>
 
         {% elif query == table.n|stringformat:"i" %}
             <td>{{ table.n }}</td>
@@ -64,14 +82,32 @@
             <td>{{ table.interes|floatformat:2 }}</td>
             <td>{{ table.Cuota|floatformat:2 }}</td>
             <td>{{ table.amortizacion|floatformat:2 }}</td>
+            <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
+            <td>{{ table.comision|floatformat:2 }}</td>
+            <td>{{ table.recompra|floatformat:2 }}</td>
             <td>{{ table.saldo_final|floatformat:2 }}</td>
+            <td>{{ table.depreciacion|floatformat:2 }}</td>
+            <td>{{ table.ahorro_t|floatformat:2 }}</td>
+            <td>{{ table.igv|floatformat:2 }}</td>
+            <td>{{ table.flujo_b|floatformat:2 }}</td>
+            <td>{{ table.flujo_igv|floatformat:2 }}</td>
+            <td>{{ table.flujo_neto|floatformat:2 }}</td>
         {% elif valor != 's'  %}
             <td>{{ table.n }}</td>
             <td>{{ table.saldo_inicial|floatformat:2 }}</td>
             <td>{{ table.interes|floatformat:2 }}</td>
             <td>{{ table.Cuota|floatformat:2 }}</td>
             <td>{{ table.amortizacion|floatformat:2 }}</td>
+            <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
+            <td>{{ table.comision|floatformat:2 }}</td>
+            <td>{{ table.recompra|floatformat:2 }}</td>
             <td>{{ table.saldo_final|floatformat:2 }}</td>
+            <td>{{ table.depreciacion|floatformat:2 }}</td>
+            <td>{{ table.ahorro_t|floatformat:2 }}</td>
+            <td>{{ table.igv|floatformat:2 }}</td>
+            <td>{{ table.flujo_b|floatformat:2 }}</td>
+            <td>{{ table.flujo_igv|floatformat:2 }}</td>
+            <td>{{ table.flujo_neto|floatformat:2 }}</td>
             {% endif %}
     </tr>
     {% endfor %}
