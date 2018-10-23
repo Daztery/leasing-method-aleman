@@ -23,8 +23,8 @@
                 <td>{{ empresa.ciudad }}</td>
                 <td>{{ empresa.ruc }}</td>
                 <td>{{ empresa.telefono }}</td>
-                <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'empresa-delete' empresa.id %}">Eliminar</a> </td>
-                <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'empresa-update' empresa.id %}">Editar</a> </td>
+                <td><a style= "color:blue;" href="{% url 'empresa-delete' empresa.id %}">Eliminar</a> </td>
+                <td><a style= "color:blue;" href="{% url 'empresa-update' empresa.id %}">Editar</a> </td>
             </tr>
             {% endfor %}
             </tbody>

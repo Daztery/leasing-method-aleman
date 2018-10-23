@@ -17,7 +17,7 @@
     <div class="tab-content">
         <div id="FC" class="tab-pane fade show active"><br>
             <div class="row">
-                <div class ="col-4">
+                <div class ="col-2">
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         Buscar periodo:<br>
@@ -25,10 +25,9 @@
                         <br>
                         <br>
                         <input class="btn btn-outline-primary" type="submit" name= "buscar" value="buscar">
-                        <a class="btn btn-outline-primary"  href="{% url 'prestamo-update' pk %}">Editar</a>
                     </form>
                 </div>
-                <div class ="col-6">
+                <div class ="col-2">
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         Filtrar entre periodos:<br>
@@ -143,18 +142,25 @@
             <div class="content-section" style="margin-bottom:80px;">
                 <div class="row">
                     <div class="col-md-6">
-                        <h4><strong>Del préstamo:</strong></h4>
+                        <h4><strong>Datos de entrada:</strong></h4>
                         <h4>Empresa ofertante: {{ prestamo.empresa_ofertante }}</h4>
                         <h4>Empresa solicitante: {{ prestamo.empresa_solicitante.razon_social }}</h4>
                         <h4>Vehículo: {{ prestamo.vehiculo }}</h4>
                         <h4>Modelo: {{ prestamo.modelo }}</h4>
-                        <h4>Precio de venta: {{ prestamo.precio_venta_del_activo }} S/.</h4>
+                        <h4>Tipo de pago: {{ prestamo.tipo_de_pago }}</h4>
+                        <h4>Tipo de tasa Interés: {{ prestamo.tipo_tasa_interes }}</h4>
+                        <h4>Plazo de gracia: {{ prestamo.plazo_de_gracia }}</h4>
+                        <h4>Fecha de inicio: {{ prestamo.fecha_inicio|date:"D d M Y" }}</h4>
                     </div>
                     <div class="col-md-6">
-                        <h4>TEA: {{ prestamo.TEA }} %</h4>
-                        <h4>IGV: 18 %</h4>
-                        <h4>IR: 30 %</h4>
-                        <h4>Vehículo: {{ prestamo.vehiculo }}</h4>
+                        <h4><strong>Del préstamo:</strong></h4>
+                        <h4>Precio de venta del activo: {{ prestamo.precio_venta_del_activo }} S/.</h4>
+                        <h4>Número de años: {{ prestamo.numero_de_años }}</h4>
+                        <h4>Frecuencia de pago: {{ frecuencia_pago }}</h4>
+                        <h4>Nª días del año: {{ dias_del_ano }}</h4>
+                        <h4>{{ prestamo.tipo_tasa_interes }}: {{ prestamo.tasa_de_interes }} %</h4>
+                        <h4>IGV: {{ IGV }} %</h4>
+                        <h4>IR: {{ impuesto_renta }} %</h4>
                         <h4>Recompra: {{ prestamo.recompra }} %</h4>
                     </div>
                 </div>
@@ -169,15 +175,13 @@
                         <h4>Comisión de activación: {{ prestamo.comision_de_activacion }} S/.</h4>
                     </div>
                     <div class="col-md-6">
-                        <h4><strong>Costos mensuales:</strong></h4>
+                        <h4><strong>Costos periódicos:</strong></h4>
                         <h4>Comisión periódica: {{ prestamo.comision_periodica }} %</h4>
                         <h4>Seguro de riesgo: {{ prestamo.seguro_riesgo }} %</h4>
-                    </div>
-                </div>
-                <hr>
-                <div class = "row">
-                    <div class="col-md-12" style="margin-top:70px;">
-                        <a class="btn btn-outline-danger"  href="{% url 'prestamo-delete' prestamo.id %}">Eliminar</a>
+                        <br>
+                        <h4><strong>Costo de oportunidad:</strong></h4>
+                        <h4>Comisión periódica: {{ prestamo.tasa_descuento_Ks }} %</h4>
+                        <h4>Seguro de riesgo: {{ prestamo.tasa_descuento_WACC }} %</h4>
                     </div>
                 </div>
             </div>
@@ -189,14 +193,35 @@
             <div class="content-section" style="margin-bottom:80px;">
                 <div class = "row">
                     <div class="col-md-6">
-                        <h4><strong>Datos de salida: </strong></h4>
-                        <h4> TCEA: {{ prestamo.TCEA }} %</h4>
-                        <h4> Cuotas: {{ prestamo.cuotas }}</h4>
-                        <h4> Intereses: {{ prestamo.Intereses }} %</h4>
-                        <h4> VAN: {{ prestamo.VAN }} S/.</h4>
+                        <h4><strong>Del arrendamiento:</strong></h4>
+                        <h4>IGV del activo: {{ IGV_del_activo|floatformat:2 }} S/.</h4>
+                        <h4>Valor venta del activo: {{ valor_de_venta_a|floatformat:2 }} S/.</h4>
+                        <h4>TEP: {{ TEP|floatformat:2 }} S/.</h4>
+                        <h4>Nº cuotas por año: {{ numero_cuotas_por_ano }} S/.</h4>
+                        <h4>Nº total de cuotas {{ nCuotas }} S/.</h4>
                     </div>
-                    <div class="col-md-6" style="margin-top:70px;">
-                        <a class="btn btn-outline-danger"  href="{% url 'prestamo-delete' prestamo.id %}">Eliminar</a>
+                    <div class="col-md-6">
+                        <h4><strong>Gastos periódicos:</strong></h4>
+                        <h4>Seguro riesgo: {{ s_riesgo }} %</h4>
+                    </div>
+                </div>
+                <hr>
+                <div class = "row">
+                    <div class="col-md-6">
+                        <h4><strong>Totales por:</strong></h4>
+                        <h4>Intereses: {{ intereses|floatformat:2 }} %</h4>
+                        <h4>Amoritzación del capital: {{ amortizacion_c|floatformat:2 }} %</h4>
+                        <h4>Seguro contra todo riesgo: {{ seguro_ctr }} %</h4>
+                        <h4>Comisiones periódicas: {{ comisiones_p }} %</h4>
+                        <h4>Recompra: {{ recompra_t|floatformat:2 }} %</h4>
+                        <h4>Desembolso total: {{ desembolso_t|floatformat:2 }} %</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <h4><strong>Indicadores de rentabilidad:</strong></h4>
+                        <h4>TCEA flujo bruto: {{ TCEA_fb|floatformat:2 }} %</h4>
+                        <h4>TCEA flujo neto: {{ TCEA_fn|floatformat:2 }} %</h4>
+                        <h4>VAN flujo bruto: {{ VAN_fb|floatformat:2 }} %</h4>
+                        <h4>VAN flujo neto: {{ VAN_fn|floatformat:2 }} %</h4>
                     </div>
                 </div>
             </div>

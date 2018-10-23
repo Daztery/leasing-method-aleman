@@ -52,7 +52,7 @@ class Prestamo(models.Model):
     frecuencia_de_pago = models.IntegerField(choices=frec_pago, default=30)
     tipo_de_pago = models.CharField(max_length=20, choices=tipo_pago, default='Efectivo')
     tipo_tasa_interes = models.CharField(max_length=20, choices=tipo_TI, default='TEA')
-    TEA = models.FloatField(null=True)
+    tasa_de_interes = models.FloatField(null=True)
     recompra = models.FloatField(null=True)
     costos_notariales = models.FloatField(null=True)
     costos_registrales = models.FloatField(null=True)

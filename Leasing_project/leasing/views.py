@@ -26,11 +26,30 @@ def prestamo_tabla(request, pk):
 
     # del prestamo
 
+    prestamo = Prestamo.objects.filter(id=pk).first()
+
+    switcher_fp = {
+       30: 'Mensual',
+       60: 'Bimestral',
+       90: 'Trimestral',
+       120: 'Cuatrimestral',
+       180: 'Semestral'
+    }
+    
+    frecuencia_pago = switcher_fp[prestamo.frecuencia_de_pago]
+
+    tasa_interes = 0
+
+    if prestamo.tipo_tasa_interes == 'TNA':
+        tasa_interes = ((1+((prestamo.tasa_de_interes/100)/360))**(360))-1
+    else:
+        tasa_interes = prestamo.tasa_de_interes/100
+
     IGV = 0.18
 
     impuesto_renta = 0.30
 
-    prestamo = Prestamo.objects.filter(id=pk).first()
+    dias_del_ano = 360
 
     #del arrendamiento
 
@@ -44,7 +63,7 @@ def prestamo_tabla(request, pk):
     prestamo.tasacion + prestamo.comision_de_estudio +
     prestamo.comision_de_activacion)
 
-    TEP = (1 + prestamo.TEA/100)**(prestamo.frecuencia_de_pago/360) - 1
+    TEP = (1 + tasa_interes)**(prestamo.frecuencia_de_pago/360) - 1
 
     numero_cuotas_por_ano = 360/prestamo.frecuencia_de_pago
 
@@ -141,15 +160,6 @@ def prestamo_tabla(request, pk):
     TIR_fn = np.irr(flujo_nt)
     TCEA_fb = ((1+TIR_fb)**(360/prestamo.frecuencia_de_pago))-1
     TCEA_fn = ((1+TIR_fn)**(360/prestamo.frecuencia_de_pago))-1
-    print(desembolso_t)
-    print("TIR FLujo bruto: ", TIR_fb)
-    print("TIR Flujo neto: ", TIR_fn)
-    print("VAN Flujo bruto: ", VAN_fb)
-    print("VAN Flujo neto: ", VAN_fn)
-    print("TCEA_fb: ", TCEA_fb*100)
-    print("TCEA_fn: ", TCEA_fn*100)
-    print("tasa_desc_ks: ", tasa_desc )
-    print("tasa_desc_wacc: ", tasa_desc2 )
     
     # Guardar periodo elegido en formato pdf
 
@@ -247,6 +257,8 @@ def prestamo_tabla(request, pk):
         'numPeriodos': numPeriodos,
         'periodoI': periodoI,
         'periodoF': periodoF,
+        'frecuencia_pago': frecuencia_pago,
+        'dias_del_ano': dias_del_ano,
         'IGV': IGV,
         'impuesto_renta': impuesto_renta,
         'IGV_del_activo': IGV_del_activo,
@@ -262,8 +274,10 @@ def prestamo_tabla(request, pk):
         'comisiones_p': comisiones_p,
         'recompra_t': recompra_t,
         'desembolso_t': desembolso_t,
-        'TCEA_fb': TCEA_fb,
-        'TCEA_fn': TCEA_fn,
+        'TCEA_fb': TCEA_fb*100,
+        'TCEA_fn': TCEA_fn*100,
+        'VAN_fb': VAN_fb,
+        'VAN_fn': VAN_fn
     }
 
     return render(request, 'leasing/prestamo_tabla.html', context)
@@ -300,6 +314,7 @@ class PrestamoUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+    success_url = '/'
 
 class PrestamoDeleteView(LoginRequiredMixin, DeleteView):
     model = Prestamo

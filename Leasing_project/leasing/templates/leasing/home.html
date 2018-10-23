@@ -11,6 +11,8 @@
                 <th scope="col" style="font-weight: 500;">Fecha de inicio</th>
                 <th scope="col" style="font-weight: 500;">Empresa solicitante</th>
                 <th scope="col" style="font-weight: 500;">Detalle de solicitud</th>
+                <th scope="col" style="font-weight: 500;">Eliminar</th>
+                <th scope="col" style="font-weight: 500;">Editar</th>
             </tr>
         </thead>
         <tbody>
@@ -20,9 +22,12 @@
             <td>{{ prestamo.date_posted }}</td>
             <td>{{ prestamo.fecha_inicio|date:"D d M Y" }}</td>
             <td>{{ prestamo.empresa_solicitante.razon_social }}</td>
-            <td><a style= "color:blue;"class="nav-item nav-link" href="{% url 'prestamo-tabla' prestamo.id %}">ver flujo</a> </td>
+            <td><a style= "color:blue;" href="{% url 'prestamo-tabla' prestamo.id %}">Ver flujo</a> </td>
+            <td><a style= "color:blue;" href="{% url 'prestamo-delete' prestamo.id %}">Eliminar</a></td>
+            <td><a style= "color:blue;" href="{% url 'prestamo-update' prestamo.id %}">Editar</a> </td>
         </tr>
         {% endfor %}
         </tbody>
     </table> 
 {% endblock content %}
+
