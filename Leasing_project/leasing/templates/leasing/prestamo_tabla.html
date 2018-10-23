@@ -1,130 +1,206 @@
 {% extends "leasing/base.html" %}
 {% block content %}
 
-<div class="row">
-    <div class ="col-4">
-        <form style="margin-bottom:20px;" method='POST' action=''>
-            {% csrf_token %}
-            Buscar periodo:<br>
-            <input style="width:40px;" type="number" name="nPeriodo">
-            <br>
-            <br>
-            <input class="btn btn-outline-primary" type="submit" name= "buscar" value="buscar">
-            <a class="btn btn-outline-primary"  href="{% url 'prestamo-update' pk %}">Editar</a>
-        </form>
-    </div>
-    <div class ="col-6">
-        <form style="margin-bottom:20px;" method='POST' action=''>
-            {% csrf_token %}
-            Filtrar entre periodos:<br>
-            <input style="width:40px; margin-right:20px;" type="number" name="periodoI">
-            <input style="width:40px;" type="number" name="periodoF">
-            <br>
-            <br>
-            <input class="btn btn-outline-primary" type="submit" name= "filtrar" value="filtrar">
-        </form>
-    </div>
-    
-</div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#FC">Flujo de caja</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#DE">Datos de entrada</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#RE">Resultados</a>
+        </li>
+    </ul>
 
-<div style="width:100%;">
-    <header style="background-color:#150250;" class="p-3 text-white text-center">
-        <div class="row">
-            <div class="col-2">
-                <h5 style="color: white; margin-left:20px; margin-top:15px;">{{ prestamo.empresa_solicitante.razon_social }} </h5>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div id="FC" class="tab-pane fade show active"><br>
+            <div class="row">
+                <div class ="col-4">
+                    <form style="margin-bottom:20px;" method='POST' action=''>
+                        {% csrf_token %}
+                        Buscar periodo:<br>
+                        <input style="width:40px;" type="number" name="nPeriodo">
+                        <br>
+                        <br>
+                        <input class="btn btn-outline-primary" type="submit" name= "buscar" value="buscar">
+                        <a class="btn btn-outline-primary"  href="{% url 'prestamo-update' pk %}">Editar</a>
+                    </form>
+                </div>
+                <div class ="col-6">
+                    <form style="margin-bottom:20px;" method='POST' action=''>
+                        {% csrf_token %}
+                        Filtrar entre periodos:<br>
+                        <input style="width:40px; margin-right:20px;" type="number" name="periodoI">
+                        <input style="width:40px;" type="number" name="periodoF">
+                        <br>
+                        <br>
+                        <input class="btn btn-outline-primary" type="submit" name= "filtrar" value="filtrar">
+                    </form>
+                </div>   
             </div>
-            <div class="col-7">
-                <h5 style="color: white; margin-left:70px; margin-top:15px;">Flujo de caja por Método Alemán</h5>
-            </div>
-            <div class ="col-3">
-                <a  class="btn btn-primary "  href="{% url 'prestamo-detail' pk %}">Ver resultados</a>
+            <header style="background-color:#150250;" class="p-3 text-white text-center">
+                <div class="row">
+                    <div class="col-2">
+                        <h5 style="color: white; margin-left:20px;">{{ prestamo.empresa_solicitante.razon_social }} </h5>
+                    </div>
+                    <div class="col-8">
+                        <h5 style="color: white;">Flujo de caja por Método Alemán</h5>
+                    </div>
+                </div>
+            </header>
+            <table class="table table-hover table-striped" style="margin-bottom:80px;">
+                <thead>
+                    <tr style="background-color: #898989; color: white; text-align:center"> 
+                        <th scope="col" style="font-weight: 500;">Nº</th>
+                        <th scope="col" style="font-weight: 500;">Saldo Inicial</th>
+                        <th scope="col" style="font-weight: 500;">Interés</th>
+                        <th scope="col" style="font-weight: 500;">Cuota</th>
+                        <th scope="col" style="font-weight: 500;">Amortización</th>
+                        <th scope="col" style="font-weight: 500;">Seguro riesgo</th>
+                        <th scope="col" style="font-weight: 500;">Comisión</th>
+                        <th scope="col" style="font-weight: 500;">Recompra</th>
+                        <th scope="col" style="font-weight: 500;">Saldo Final</th>
+                        <th scope="col" style="font-weight: 500;">Depreciación</th>
+                        <th scope="col" style="font-weight: 500;">Ahorro tributario</th>
+                        <th scope="col" style="font-weight: 500;">IGV</th>
+                        <th scope="col" style="font-weight: 500;">Flujo bruto</th>
+                        <th scope="col" style="font-weight: 500;">Flujo IGV</th>
+                        <th scope="col" style="font-weight: 500;">Flujo neto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for table in tables %}
+                <tr style="text-align:center"> 
+                    {% if table.n in numPeriodos %}
+                        <td>{{ table.n }}</td>
+                        <td>{{ table.saldo_inicial|floatformat:2 }}</td>
+                        <td>{{ table.interes|floatformat:2 }}</td>
+                        <td>{{ table.Cuota|floatformat:2 }}</td>
+                        <td>{{ table.amortizacion|floatformat:2 }}</td>
+                        <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
+                        <td>{{ table.comision|floatformat:2 }}</td>
+                        <td>{{ table.recompra|floatformat:2 }}</td>
+                        <td>{{ table.saldo_final|floatformat:2 }}</td>
+                        <td>{{ table.depreciacion|floatformat:2 }}</td>
+                        <td>{{ table.ahorro_t|floatformat:2 }}</td>
+                        <td>{{ table.igv|floatformat:2 }}</td>
+                        <td>{{ table.flujo_b|floatformat:2 }}</td>
+                        <td>{{ table.flujo_igv|floatformat:2 }}</td>
+                        <td>{{ table.flujo_neto|floatformat:2 }}</td>
+
+                    {% elif query == table.n|stringformat:"i" %}
+                        <td>{{ table.n }}</td>
+                        <td>{{ table.saldo_inicial|floatformat:2 }}</td>
+                        <td>{{ table.interes|floatformat:2 }}</td>
+                        <td>{{ table.Cuota|floatformat:2 }}</td>
+                        <td>{{ table.amortizacion|floatformat:2 }}</td>
+                        <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
+                        <td>{{ table.comision|floatformat:2 }}</td>
+                        <td>{{ table.recompra|floatformat:2 }}</td>
+                        <td>{{ table.saldo_final|floatformat:2 }}</td>
+                        <td>{{ table.depreciacion|floatformat:2 }}</td>
+                        <td>{{ table.ahorro_t|floatformat:2 }}</td>
+                        <td>{{ table.igv|floatformat:2 }}</td>
+                        <td>{{ table.flujo_b|floatformat:2 }}</td>
+                        <td>{{ table.flujo_igv|floatformat:2 }}</td>
+                        <td>{{ table.flujo_neto|floatformat:2 }}</td>
+                    {% elif valor != 's'  %}
+                        <td>{{ table.n }}</td>
+                        <td>{{ table.saldo_inicial|floatformat:2 }}</td>
+                        <td>{{ table.interes|floatformat:2 }}</td>
+                        <td>{{ table.Cuota|floatformat:2 }}</td>
+                        <td>{{ table.amortizacion|floatformat:2 }}</td>
+                        <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
+                        <td>{{ table.comision|floatformat:2 }}</td>
+                        <td>{{ table.recompra|floatformat:2 }}</td>
+                        <td>{{ table.saldo_final|floatformat:2 }}</td>
+                        <td>{{ table.depreciacion|floatformat:2 }}</td>
+                        <td>{{ table.ahorro_t|floatformat:2 }}</td>
+                        <td>{{ table.igv|floatformat:2 }}</td>
+                        <td>{{ table.flujo_b|floatformat:2 }}</td>
+                        <td>{{ table.flujo_igv|floatformat:2 }}</td>
+                        <td>{{ table.flujo_neto|floatformat:2 }}</td>
+                        {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <form style="margin-bottom:80px;" method='POST' action=''>
+                {% csrf_token %}
+                <input style="width:40px; margin-right:20px;" type="hidden" value="{{ periodoI }}" name="periodoIPDF">
+                <input style="width:40px;" type="hidden" value="{{ periodoF }}" name="periodoFPDF">
+                <input style="width:40px;" type="hidden" value="{{ query }}"  name="nPeriodoPDF">
+                <input type="{{ iType }}" class="btn btn-outline-primary" name= "PDF" value="Guardar PDF">
+            </form>
+        </div>
+        <div id="DE" class="tab-pane fade"><br>
+            <header style="background-color:#150250" class="p-3 text-white text-center">
+                <h5 style="color: white;">Solicitud LAP-Sol-{{ prestamo.id }}</h5>
+            </header>
+            <div class="content-section" style="margin-bottom:80px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4><strong>Del préstamo:</strong></h4>
+                        <h4>Empresa ofertante: {{ prestamo.empresa_ofertante }}</h4>
+                        <h4>Empresa solicitante: {{ prestamo.empresa_solicitante.razon_social }}</h4>
+                        <h4>Vehículo: {{ prestamo.vehiculo }}</h4>
+                        <h4>Modelo: {{ prestamo.modelo }}</h4>
+                        <h4>Precio de venta: {{ prestamo.precio_venta_del_activo }} S/.</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>TEA: {{ prestamo.TEA }} %</h4>
+                        <h4>IGV: 18 %</h4>
+                        <h4>IR: 30 %</h4>
+                        <h4>Vehículo: {{ prestamo.vehiculo }}</h4>
+                        <h4>Recompra: {{ prestamo.recompra }} %</h4>
+                    </div>
+                </div>
+                <hr>
+                <div class = "row">
+                    <div class="col-md-6">
+                        <h4><strong>Costos iniciales:</strong></h4>
+                        <h4>Costes notariales: {{ prestamo.costos_notariales }} S/.</h4>
+                        <h4>Costes registrales: {{ prestamo.costos_registrales }} S/.</h4>
+                        <h4>Tasación: {{ prestamo.tasacion }} S/.</h4>
+                        <h4>Comisión de estudio: {{ prestamo.comision_de_estudio }} S/.</h4>
+                        <h4>Comisión de activación: {{ prestamo.comision_de_activacion }} S/.</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <h4><strong>Costos mensuales:</strong></h4>
+                        <h4>Comisión periódica: {{ prestamo.comision_periodica }} %</h4>
+                        <h4>Seguro de riesgo: {{ prestamo.seguro_riesgo }} %</h4>
+                    </div>
+                </div>
+                <hr>
+                <div class = "row">
+                    <div class="col-md-12" style="margin-top:70px;">
+                        <a class="btn btn-outline-danger"  href="{% url 'prestamo-delete' prestamo.id %}">Eliminar</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </header>
-    <table class="table table-hover table-striped" style="margin-bottom:80px;">
-        <thead>
-            <tr style="background-color: #898989; color: white; text-align:center"> 
-                <th scope="col" style="font-weight: 500;">Nº</th>
-                <th scope="col" style="font-weight: 500;">Saldo Inicial</th>
-                <th scope="col" style="font-weight: 500;">Interés</th>
-                <th scope="col" style="font-weight: 500;">Cuota</th>
-                <th scope="col" style="font-weight: 500;">Amortización</th>
-                <th scope="col" style="font-weight: 500;">Seguro riesgo</th>
-                <th scope="col" style="font-weight: 500;">Comisión</th>
-                <th scope="col" style="font-weight: 500;">Recompra</th>
-                <th scope="col" style="font-weight: 500;">Saldo Final</th>
-                <th scope="col" style="font-weight: 500;">Depreciación</th>
-                <th scope="col" style="font-weight: 500;">Ahorro tributario</th>
-                <th scope="col" style="font-weight: 500;">IGV</th>
-                <th scope="col" style="font-weight: 500;">Flujo bruto</th>
-                <th scope="col" style="font-weight: 500;">Flujo IGV</th>
-                <th scope="col" style="font-weight: 500;">Flujo neto</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for table in tables %}
-        <tr style="text-align:center"> 
-            {% if table.n in numPeriodos %}
-                <td>{{ table.n }}</td>
-                <td>{{ table.saldo_inicial|floatformat:2 }}</td>
-                <td>{{ table.interes|floatformat:2 }}</td>
-                <td>{{ table.Cuota|floatformat:2 }}</td>
-                <td>{{ table.amortizacion|floatformat:2 }}</td>
-                <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
-                <td>{{ table.comision|floatformat:2 }}</td>
-                <td>{{ table.recompra|floatformat:2 }}</td>
-                <td>{{ table.saldo_final|floatformat:2 }}</td>
-                <td>{{ table.depreciacion|floatformat:2 }}</td>
-                <td>{{ table.ahorro_t|floatformat:2 }}</td>
-                <td>{{ table.igv|floatformat:2 }}</td>
-                <td>{{ table.flujo_b|floatformat:2 }}</td>
-                <td>{{ table.flujo_igv|floatformat:2 }}</td>
-                <td>{{ table.flujo_neto|floatformat:2 }}</td>
-
-            {% elif query == table.n|stringformat:"i" %}
-                <td>{{ table.n }}</td>
-                <td>{{ table.saldo_inicial|floatformat:2 }}</td>
-                <td>{{ table.interes|floatformat:2 }}</td>
-                <td>{{ table.Cuota|floatformat:2 }}</td>
-                <td>{{ table.amortizacion|floatformat:2 }}</td>
-                <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
-                <td>{{ table.comision|floatformat:2 }}</td>
-                <td>{{ table.recompra|floatformat:2 }}</td>
-                <td>{{ table.saldo_final|floatformat:2 }}</td>
-                <td>{{ table.depreciacion|floatformat:2 }}</td>
-                <td>{{ table.ahorro_t|floatformat:2 }}</td>
-                <td>{{ table.igv|floatformat:2 }}</td>
-                <td>{{ table.flujo_b|floatformat:2 }}</td>
-                <td>{{ table.flujo_igv|floatformat:2 }}</td>
-                <td>{{ table.flujo_neto|floatformat:2 }}</td>
-            {% elif valor != 's'  %}
-                <td>{{ table.n }}</td>
-                <td>{{ table.saldo_inicial|floatformat:2 }}</td>
-                <td>{{ table.interes|floatformat:2 }}</td>
-                <td>{{ table.Cuota|floatformat:2 }}</td>
-                <td>{{ table.amortizacion|floatformat:2 }}</td>
-                <td>{{ table.seguro_riesgo|floatformat:2 }}</td>
-                <td>{{ table.comision|floatformat:2 }}</td>
-                <td>{{ table.recompra|floatformat:2 }}</td>
-                <td>{{ table.saldo_final|floatformat:2 }}</td>
-                <td>{{ table.depreciacion|floatformat:2 }}</td>
-                <td>{{ table.ahorro_t|floatformat:2 }}</td>
-                <td>{{ table.igv|floatformat:2 }}</td>
-                <td>{{ table.flujo_b|floatformat:2 }}</td>
-                <td>{{ table.flujo_igv|floatformat:2 }}</td>
-                <td>{{ table.flujo_neto|floatformat:2 }}</td>
-                {% endif %}
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <form style="margin-bottom:80px;" method='POST' action=''>
-        {% csrf_token %}
-        <input style="width:40px; margin-right:20px;" type="hidden" value="{{ periodoI }}" name="periodoIPDF">
-        <input style="width:40px;" type="hidden" value="{{ periodoF }}" name="periodoFPDF">
-        <input style="width:40px;" type="hidden" value="{{ query }}"  name="nPeriodoPDF">
-        <input type="{{ iType }}" class="btn btn-outline-primary" name= "PDF" value="Guardar PDF">
-    </form>
-</div>  
+        <div id="RE" class="tab-pane fade"><br>
+            <header style="background-color:#150250" class="p-3 text-white text-center">
+                <h5 style="color: white;">Solicitud LAP-Sol-{{ prestamo.id }}</h5>
+            </header>
+            <div class="content-section" style="margin-bottom:80px;">
+                <div class = "row">
+                    <div class="col-md-6">
+                        <h4><strong>Datos de salida: </strong></h4>
+                        <h4> TCEA: {{ prestamo.TCEA }} %</h4>
+                        <h4> Cuotas: {{ prestamo.cuotas }}</h4>
+                        <h4> Intereses: {{ prestamo.Intereses }} %</h4>
+                        <h4> VAN: {{ prestamo.VAN }} S/.</h4>
+                    </div>
+                    <div class="col-md-6" style="margin-top:70px;">
+                        <a class="btn btn-outline-danger"  href="{% url 'prestamo-delete' prestamo.id %}">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 {% endblock content %}

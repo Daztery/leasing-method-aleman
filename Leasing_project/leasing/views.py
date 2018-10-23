@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from .models import Prestamo, Empresa
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import PrestamoForm, PrestamoForm1, PrestamoForm2
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from .forms import PrestamoForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
 from django.contrib import messages
@@ -24,13 +24,15 @@ def prestamo_tabla(request, pk):
 
     #Al crear un nuevo leasing nos traerá automáticamente a esta función
 
-    #Variables
+    # del prestamo
 
     IGV = 0.18
 
     impuesto_renta = 0.30
 
     prestamo = Prestamo.objects.filter(id=pk).first()
+
+    #del arrendamiento
 
     IGV_del_activo = (prestamo.precio_venta_del_activo/(1+IGV))*IGV
 
@@ -49,9 +51,11 @@ def prestamo_tabla(request, pk):
     nCuotas = numero_cuotas_por_ano*prestamo.numero_de_años
 
     # de los costes/gastos periodicos
+
     s_riesgo = (prestamo.seguro_riesgo/100)*(prestamo.precio_venta_del_activo/numero_cuotas_por_ano) 
 
     # … totales por …
+
     intereses = 0
     amortizacion_c = 0
     seguro_ctr = 0
@@ -59,13 +63,27 @@ def prestamo_tabla(request, pk):
     recompra_t = 0
     desembolso_t = 0
 
+    
+    # Descuentos 
+
+    tasa_desc = round((1+(prestamo.tasa_descuento_Ks/100))**(prestamo.frecuencia_de_pago/360) - 1, 9)
+    tasa_desc2 = round((1+(prestamo.tasa_descuento_WACC/100))**(prestamo.frecuencia_de_pago/360) - 1, 9)
+
     #de Indicadores de Rentabilidad
-    tasa_desc = (1+prestamo.tasa_descuento_Ks)**(prestamo.frecuencia_de_pago/360) - 1
 
     VAN_fb = 0
     VAN_fn = 0
+    TIR_fb = 0
+    TIR_fn = 0
+    TCEA_fb = 0
+    TCEA_fn = 0
+
+    #Flujos brutos y netos
+
     flujo_br = []
+    flujo_nt = []
     flujo_br.append(monto_del_leasing)
+    flujo_nt.append(monto_del_leasing)
 
     """
         Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "prestamo.precio_venta", por ejemplo
@@ -104,6 +122,7 @@ def prestamo_tabla(request, pk):
         comisiones_p = campo["comision"] + comisiones_p
         recompra_t = recompra_t + campo["recompra"]
         flujo_br.append(campo["flujo_b"])
+        flujo_nt.append(campo["flujo_neto"])
 
         tables.append(campo)
 
@@ -114,9 +133,23 @@ def prestamo_tabla(request, pk):
     recompra_t =recompra_t*-1
     desembolso_t = intereses + amortizacion_c + seguro_ctr + comisiones_p + recompra_t
     
+    #Indicadores de rentabilidad
+
     VAN_fb = np.npv(tasa_desc, flujo_br)
+    VAN_fn = np.npv(tasa_desc2, flujo_nt)
+    TIR_fb = np.irr(flujo_br)
+    TIR_fn = np.irr(flujo_nt)
+    TCEA_fb = ((1+TIR_fb)**(360/prestamo.frecuencia_de_pago))-1
+    TCEA_fn = ((1+TIR_fn)**(360/prestamo.frecuencia_de_pago))-1
     print(desembolso_t)
-    print(VAN_fb)
+    print("TIR FLujo bruto: ", TIR_fb)
+    print("TIR Flujo neto: ", TIR_fn)
+    print("VAN Flujo bruto: ", VAN_fb)
+    print("VAN Flujo neto: ", VAN_fn)
+    print("TCEA_fb: ", TCEA_fb*100)
+    print("TCEA_fn: ", TCEA_fn*100)
+    print("tasa_desc_ks: ", tasa_desc )
+    print("tasa_desc_wacc: ", tasa_desc2 )
     
     # Guardar periodo elegido en formato pdf
 
@@ -213,7 +246,24 @@ def prestamo_tabla(request, pk):
         'iType': iType,
         'numPeriodos': numPeriodos,
         'periodoI': periodoI,
-        'periodoF': periodoF
+        'periodoF': periodoF,
+        'IGV': IGV,
+        'impuesto_renta': impuesto_renta,
+        'IGV_del_activo': IGV_del_activo,
+        'valor_de_venta_a': valor_de_venta_a,
+        'monto_del_leasing': monto_del_leasing,
+        'TEP': TEP,
+        'numero_cuotas_por_ano': numero_cuotas_por_ano,
+        'nCuotas': nCuotas,
+        's_riesgo': s_riesgo,
+        'intereses': intereses, 
+        'amortizacion_c': amortizacion_c,
+        'seguro_ctr': seguro_ctr,
+        'comisiones_p': comisiones_p,
+        'recompra_t': recompra_t,
+        'desembolso_t': desembolso_t,
+        'TCEA_fb': TCEA_fb,
+        'TCEA_fn': TCEA_fn,
     }
 
     return render(request, 'leasing/prestamo_tabla.html', context)
@@ -234,9 +284,6 @@ def iterarPDF(year, month, day, tables, pk, x, prestamo, mess, path):
     c.drawString(100, 200, "Cuota: " + str(tables[x-1]["Cuota"]))
     c.drawString(100, 150, "Saldo final: " + str(tables[x-1]["saldo_final"]))
     c.save()
-
-class PrestamoDetailView(LoginRequiredMixin, DetailView):
-    model = Prestamo
 
 class PrestamoCreateView(LoginRequiredMixin, CreateView):
     model = Prestamo
