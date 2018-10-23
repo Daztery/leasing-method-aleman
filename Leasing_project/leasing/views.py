@@ -65,6 +65,7 @@ def prestamo_tabla(request, pk):
     VAN_fb = 0
     VAN_fn = 0
     flujo_br = []
+    flujo_br.append(monto_del_leasing)
 
     """
         Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "prestamo.precio_venta", por ejemplo
@@ -113,10 +114,11 @@ def prestamo_tabla(request, pk):
     recompra_t =recompra_t*-1
     desembolso_t = intereses + amortizacion_c + seguro_ctr + comisiones_p + recompra_t
     
-    VAN_fb = monto_del_leasing + np.npv(tasa_desc, flujo_br)
+    VAN_fb = np.npv(tasa_desc, flujo_br)
     print(desembolso_t)
     print(VAN_fb)
-    #Guardar periodo elegido en formato pdf
+    
+    # Guardar periodo elegido en formato pdf
 
     year = prestamo.fecha_inicio.year
     month = prestamo.fecha_inicio.month
