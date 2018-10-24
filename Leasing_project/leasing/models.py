@@ -63,6 +63,7 @@ class Prestamo(models.Model):
     seguro_riesgo = models.FloatField(null=True)
     fecha_inicio = models.DateTimeField(default=datetime.now, blank=True)
     plazo_de_gracia = models.IntegerField(choices=plazo_g, default=30)
+    periodo_inicial_pg = models.IntegerField(default=1)
     tasa_descuento_Ks = models.FloatField(null=True)
     tasa_descuento_WACC = models.FloatField(null=True)
     date_posted = models.DateTimeField(default=datetime.now)

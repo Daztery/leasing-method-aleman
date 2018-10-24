@@ -110,6 +110,11 @@ def prestamo_tabla(request, pk):
     """
 
     # Llenamos la tabla con las variables calculadas
+    
+    inicio_periodo_pg = prestamo.periodo_inicial_pg
+    fin_periodo_pg = prestamo.periodo_inicial_pg + (prestamo.plazo_de_gracia/30)
+
+    print(inicio_periodo_pg, fin_periodo_pg)
 
     for x in range(1, int(nCuotas) + 1):
         campo = {}
@@ -119,9 +124,15 @@ def prestamo_tabla(request, pk):
         else:
             campo["saldo_inicial"] = tables[x-2]["saldo_final"]
         campo["interes"] = (campo["saldo_inicial"]*-1)*TEP
-        campo["amortizacion"] = (campo["saldo_inicial"]*-1)/(nCuotas-x+1)
-        campo["Cuota"] = campo["interes"] + campo["amortizacion"]
-        campo["saldo_final"] = campo["saldo_inicial"] + campo["amortizacion"]
+        if inicio_periodo_pg == x and inicio_periodo_pg < int(fin_periodo_pg):
+            inicio_periodo_pg += 1
+            campo["Cuota"] = 0
+            campo["amortizacion"] = 0
+            campo["saldo_final"] = campo["saldo_inicial"] - campo["interes"]
+        else:
+            campo["amortizacion"] = (campo["saldo_inicial"]*-1)/(nCuotas-x+1)
+            campo["Cuota"] = campo["interes"] + campo["amortizacion"]
+            campo["saldo_final"] = campo["saldo_inicial"] + campo["amortizacion"]
         campo["seguro_riesgo"] = s_riesgo*-1
         campo["comision"] = (prestamo.comision_periodica)*-1
         if x == int(nCuotas):
