@@ -10,6 +10,7 @@ enter the following commands in your terminal:</br>
 <li>pip install Pillow</li>
 <li>pip install reportlab</li>
 <li>pip install pip install PyPDF2</li>
+<li>pip install django-numpy</li>
 </ul>
 
 You can run the website with the following command: python manage.py runserver. Enter this url in your browser: http://localhost:8000
