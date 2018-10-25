@@ -41,7 +41,7 @@ def prestamo_tabla(request, pk):
     tasa_interes = 0
 
     if prestamo.tipo_tasa_interes == 'TNA':
-        tasa_interes = ((1+((prestamo.tasa_de_interes/100)/360))**(360))-1
+        tasa_interes = round(((1+((prestamo.tasa_de_interes/100)/prestamo.periodo_cap))**(prestamo.periodo_cap))-1, 9)
     else:
         tasa_interes = prestamo.tasa_de_interes/100
 
@@ -113,8 +113,6 @@ def prestamo_tabla(request, pk):
     
     inicio_periodo_pg = prestamo.periodo_inicial_pg
     fin_periodo_pg = prestamo.periodo_inicial_pg + (prestamo.plazo_de_gracia/30)
-
-    print(inicio_periodo_pg, fin_periodo_pg)
 
     for x in range(1, int(nCuotas) + 1):
         campo = {}
@@ -270,8 +268,8 @@ def prestamo_tabla(request, pk):
         'periodoF': periodoF,
         'frecuencia_pago': frecuencia_pago,
         'dias_del_ano': dias_del_ano,
-        'IGV': IGV,
-        'impuesto_renta': impuesto_renta,
+        'IGV': IGV*100,
+        'impuesto_renta': impuesto_renta*100,
         'IGV_del_activo': IGV_del_activo,
         'valor_de_venta_a': valor_de_venta_a,
         'monto_del_leasing': monto_del_leasing,

@@ -34,6 +34,19 @@ frec_pago = (
     (180, 'Semestral'),
 )
 
+pe_cap = (
+    (0, 'Ninguna'),
+    (360, 'Diaria'),
+    (24, 'Quincenal'),
+    (12, 'Mensual'),
+    (6, 'Bimestral'),
+    (4, 'Trimestral'),
+    (3, 'Cuatrimestral'),
+    (2, 'Semestral'),
+    (1, 'Anual'),
+)
+
+
 plazo_g = (
     (0, 'sin plazo de gracia'),
     (30, '1 mes'),
@@ -52,6 +65,7 @@ class Prestamo(models.Model):
     frecuencia_de_pago = models.IntegerField(choices=frec_pago, default=30)
     tipo_de_pago = models.CharField(max_length=20, choices=tipo_pago, default='Efectivo')
     tipo_tasa_interes = models.CharField(max_length=20, choices=tipo_TI, default='TEA')
+    periodo_cap = models.IntegerField(choices=pe_cap, default=360)
     tasa_de_interes = models.FloatField(null=True)
     recompra = models.FloatField(null=True)
     costos_notariales = models.FloatField(null=True)
