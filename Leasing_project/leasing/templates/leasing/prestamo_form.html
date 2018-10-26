@@ -5,15 +5,14 @@
         <h5 style="color: white;">Nuevo Leasing</h5>
     </header>    
     <div class="content-section">
-        
         <form method="POST">
             {% csrf_token %}
                 <fieldset class="form-group">
                     {{ form|crispy }}
                 </fieldset>
             <div class="from-group" style="padding-bottom:100px;">
-                <button class="btn btn-outline-primary" type="submit">Confirmar</button>
-                <a class="btn btn-outline-danger"  href="{% url 'leasing-home' %}">Cancelar</a>
+                <button class="btn btn-primary btn-md" type="submit">Confirmar</button>
+                <a class="btn btn-danger btn-md"  href="{% url 'leasing-home' %}">Cancelar</a>
             </div>
         </form>
     </div>

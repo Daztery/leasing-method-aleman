@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from .models import Prestamo, Empresa
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .forms import PrestamoForm
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, landscape
 from django.contrib import messages
-from PyPDF2 import PdfFileMerger
+from .models import Prestamo, Empresa
+from .forms import PrestamoForm
+from .constants import *
+from .pdfFunctions import *
 import os
 import numpy as np
 
@@ -45,12 +44,6 @@ def prestamo_tabla(request, pk):
     else:
         tasa_interes = prestamo.tasa_de_interes/100
 
-    IGV = 0.18
-
-    impuesto_renta = 0.30
-
-    dias_del_ano = 360
-
     #del arrendamiento
 
     IGV_del_activo = (prestamo.precio_venta_del_activo/(1+IGV))*IGV
@@ -82,7 +75,6 @@ def prestamo_tabla(request, pk):
     recompra_t = 0
     desembolso_t = 0
 
-    
     # Descuentos 
 
     tasa_desc = round((1+(prestamo.tasa_descuento_Ks/100))**(prestamo.frecuencia_de_pago/360) - 1, 9)
@@ -103,11 +95,6 @@ def prestamo_tabla(request, pk):
     flujo_nt = []
     flujo_br.append(monto_del_leasing)
     flujo_nt.append(monto_del_leasing)
-
-    """
-        Podemos utilizar los datos de entrada de el último objeto creado de Prestamo "prestamo.precio_venta", por ejemplo
-        con esto calculamos los valores de salida que salen en la tabla de método alemán
-    """
 
     # Llenamos la tabla con las variables calculadas
     
@@ -154,6 +141,8 @@ def prestamo_tabla(request, pk):
 
         tables.append(campo)
 
+    # Totales por
+
     intereses = intereses*-1
     amortizacion_c = amortizacion_c*-1
     seguro_ctr = seguro_ctr*-1
@@ -191,7 +180,13 @@ def prestamo_tabla(request, pk):
 
     if 'filtrar' in request.POST and periodoI != "" and periodoF != "": #Filtramos entre periodos
         numPeriodos = range(int(periodoI), int(periodoF)+1)
-        
+
+    #Path generico
+    
+    path = "/Users/DOMINIC/Desktop/UPC VI/FINANZAS/Trabajo parcial/leasingApp/Final-Project-Finance/Leasing_project/"
+
+    # Del flujo de caja
+
     if 'PDF' in request.POST:
         nPeriodoPDF = request.POST.get("nPeriodoPDF")
         periodoIPDF = request.POST.get("periodoIPDF")
@@ -200,9 +195,8 @@ def prestamo_tabla(request, pk):
         #Creamos el path
 
         nestedPath = ""
-        path = "/Users/DOMINIC/Desktop/UPC VI/FINANZAS/Trabajo parcial/leasingApp/Final-Project-Finance/Leasing_project/"
 
-        nestedPath = path + "LeasingPDF/" + str(prestamo.empresa_solicitante.razon_social + "/")
+        nestedPath = path + "LeasingPDF/" + str(prestamo.empresa_solicitante.razon_social + "/flujo de caja/")
 
         if not os.path.exists(nestedPath): 
             os.makedirs(nestedPath)
@@ -217,7 +211,7 @@ def prestamo_tabla(request, pk):
 
             for x in range(1, int(nCuotas) + 1):
                 if tables[x-1]["n"] == int(nPeriodoPDF):
-                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess, nestedPath + "periodo/")
+                    iterarPDFflujo(year, month, day, tables, x, prestamo, mess, nestedPath + "periodo/")
 
             messages.success(request, f'¡Se ha guardado PDF exitósamente!')
 
@@ -230,7 +224,7 @@ def prestamo_tabla(request, pk):
 
             for x in range(1, int(nCuotas) + 1):  
                 if tables[x-1]["n"] >= int(periodoIPDF) and tables[x-1]["n"] <= int(periodoFPDF):
-                    iterarPDF(year, month, day, tables, pk, x, prestamo, mess, path)
+                    iterarPDFflujo(year, month, day, tables, x, prestamo, mess, path)
                     pdf_files.append("LAP-Sol-" + str(prestamo.id) + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
                     str(year) + "-" + str(month) + "-" + str(day) + ".pdf")  
 
@@ -255,6 +249,40 @@ def prestamo_tabla(request, pk):
                     str(year) + "-" + str(month) + "-" + str(day) + ".pdf")  
 
             messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+
+    # De los datos de entrada
+        
+    if 'PDFentrada' in request.POST:
+
+        #Creamos el path
+
+        nestedPath = path + "LeasingPDF/" + str(prestamo.empresa_solicitante.razon_social + "/datos de entrada/")
+
+        if not os.path.exists(nestedPath): 
+            os.makedirs(nestedPath)
+
+        PDFDE(year, month, day, prestamo, nestedPath, frecuencia_pago, dias_del_ano, IGV*100, impuesto_renta*100)
+
+        messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+    
+    # Del resultado
+    
+    if 'PDResultado' in request.POST:
+
+        #Creamos el path
+
+        nestedPath = path + "LeasingPDF/" + str(prestamo.empresa_solicitante.razon_social + "/resultados/")
+
+        if not os.path.exists(nestedPath): 
+            os.makedirs(nestedPath)
+
+        PDFRE(year, month, day, prestamo, nestedPath, IGV_del_activo, valor_de_venta_a, monto_del_leasing, TEP*100,
+        numero_cuotas_por_ano, nCuotas, s_riesgo, intereses, amortizacion_c, seguro_ctr, comisiones_p, recompra_t,
+        desembolso_t, TCEA_fb*100, TCEA_fn*100, VAN_fb, VAN_fn)
+
+        messages.success(request, f'¡Se ha guardado PDF exitósamente!')
+
+    
 
     context = {
         'tables': tables,
@@ -290,23 +318,6 @@ def prestamo_tabla(request, pk):
     }
 
     return render(request, 'leasing/prestamo_tabla.html', context)
-
-    #Puede ser beno crear una tabla para guardar estos resultados, puesto que solo se generan al momento de crear un nuevo leasing y no son persistentes.
-
-def iterarPDF(year, month, day, tables, pk, x, prestamo, mess, path):
-    
-    c = canvas.Canvas(path + "LAP-Sol-" + str(prestamo.id) + mess + " " + str(prestamo.empresa_solicitante.razon_social) + "-Periodo-" +  str(x) + " " +
-    str(year) + "-" + str(month) + "-" + str(day) + ".pdf", pagesize=landscape(letter))
-    c.setFont('Helvetica', 48, leading=None)
-    c.drawCentredString(415, 500, "Empresa: " + str(prestamo.empresa_solicitante.razon_social))
-    c.setFont('Helvetica', 20, leading=None)
-    c.drawString(100, 400, "Periodo: " + str(tables[x-1]["n"]))
-    c.drawString(100, 350, "Saldo inicial: " + str(tables[x-1]["saldo_inicial"]))
-    c.drawString(100, 300, "Interés: " + str(tables[x-1]["interes"]))
-    c.drawString(100, 250, "Amortización: " + str(tables[x-1]["amortizacion"]))
-    c.drawString(100, 200, "Cuota: " + str(tables[x-1]["Cuota"]))
-    c.drawString(100, 150, "Saldo final: " + str(tables[x-1]["saldo_final"]))
-    c.save()
 
 class PrestamoCreateView(LoginRequiredMixin, CreateView):
     model = Prestamo
