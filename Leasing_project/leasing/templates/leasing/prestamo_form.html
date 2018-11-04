@@ -10,9 +10,9 @@
                 <fieldset class="form-group">
                     {{ form|crispy }}
                 </fieldset>
-            <div class="from-group" style="padding-bottom:100px;">
-                <button class="btn btn-primary btn-md" type="submit">Confirmar</button>
-                <a class="btn btn-danger btn-md"  href="{% url 'leasing-home' %}">Cancelar</a>
+            <div class="from-group d-flex justify-content-center" style="padding-bottom:100px;">
+                <a class="btn btn-danger btn-md"   style="width: 50%;" href="{% url 'leasing-home' %}">Cancelar</a>
+                <button class="btn btn-success btn-md"  style="width: 50%;" type="submit">Confirmar</button>
             </div>
         </form>
     </div>

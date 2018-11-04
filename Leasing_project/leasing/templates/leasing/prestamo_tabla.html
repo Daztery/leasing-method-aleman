@@ -17,20 +17,21 @@
     <div class="tab-content">
         <div id="FC" class="tab-pane fade show active"><br>
             <div class="row">
-                <div class ="col-4">
+                <div class ="col-6 text-center">
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         <label style="display:inline-block">Buscar por periodo:</label>
-                        <input style="margin-left:20px; width:40px; display:inline-block"  class="form-control" type="number" name="nPeriodo">
+                        <input class ="text-center" style="margin-left:20px; width:30px; display:inline-block"  class="form-control" type="number" name="nPeriodo" value="1">
                         <input style="margin-left:20px; display:inline-block" class="btn btn-primary btn-md" type="submit" name= "buscar" value="buscar">                 
                     </form>
                 </div>
-                <div class ="col-4">
+                <div class ="col-6 ">
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         <label style="display:inline-block">Filtrar entre periodos:</label>
-                        <input style="margin-left:20px; width:40px; display:inline-block; margin-right:20px;" type="number" name="periodoI">
-                        <input style="margin-left:20px; width:40px; display:inline-block;" type="number" name="periodoF">
+                        <input class ="text-center" style="margin-left:10px; width:30px; display:inline-block; margin-right:20px;" type="number" name="periodoI" value="1">
+                        <span>al</span>
+                        <input class ="text-center" style="margin-left:10px; width:30px; display:inline-block;" type="number" name="periodoF" value="2">
                         <input style="margin-left:20px; display:inline-block" class="btn btn-primary btn-md" type="submit" name= "filtrar" value="filtrar">
                     </form>
                 </div>   
@@ -48,7 +49,7 @@
                     </div>
                 </div>
             </header>
-            <table class="table table-hover table-striped" style="margin-bottom:80px;">
+            <table class="table table-hover table-striped" >
                 <thead>
                     <tr style="background-color: #898989; color: white; text-align:center"> 
                         <th scope="col" style="font-weight: 500;">Nº</th>
@@ -138,58 +139,63 @@
             <header style="background-color:#150250" class="p-3 text-white text-center">
                 <h5 style="color: white;">Solicitud LAP-Sol-{{ prestamo.id }}</h5>
             </header>
-            <div class="content-section" style="margin-bottom:80px;">
+            <div class="content-section">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-center">
                         <h4><strong>Datos de entrada:</strong></h4><br>
-                        <p>Empresa ofertante: {{ prestamo.empresa_ofertante }}</p>
-                        <p>Empresa solicitante: {{ prestamo.empresa_solicitante.razon_social }}</p>
-                        <p>Vehículo: {{ prestamo.vehiculo }}</p>
-                        <p>Modelo: {{ prestamo.modelo }}</p>
-                        <p>Tipo de pago: {{ prestamo.tipo_de_pago }}</p>
-                        <p>Tipo de tasa Interés: {{ prestamo.tipo_tasa_interes }}</p>
-                        <p>Plazo de gracia: {{ prestamo.plazo_de_gracia }} días</p>
-                        <p>Periodo inicial de plazo de gracia: {{ prestamo.periodo_inicial_pg }}</p>
-                        <p>Fecha de inicio: {{ prestamo.fecha_inicio|date:"D d M Y" }}</p>
+                        <p><strong>Empresa ofertante: </strong>{{ prestamo.empresa_ofertante }}</p>
+                        <p><strong>Empresa solicitante:</strong> {{ prestamo.empresa_solicitante.razon_social }}</p>
+                        <p><strong>Vehículo: </strong>{{ prestamo.vehiculo }}</p>
+                        <p><strong>Modelo:</strong> {{ prestamo.modelo }}</p>
+                        <p><strong>Tipo de pago:</strong> {{ prestamo.tipo_de_pago }}</p>
+                        <p><strong>Tipo de tasa Interés:</strong> {{ prestamo.tipo_tasa_interes }}</p>
+                        <p><strong>Plazo de gracia:</strong> {{ prestamo.plazo_de_gracia }} días</p>
+                        <p><strong>Periodo inicial de plazo de gracia:</strong> {{ prestamo.periodo_inicial_pg }}</p>
+                        <p><strong>Fecha de inicio: </strong>{{ prestamo.fecha_inicio|date:"D d M Y" }}</p>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-center">
                         <h4><strong>Del préstamo:</strong></h4><br>
-                        <p>Precio de venta del activo: S/. {{ prestamo.precio_venta_del_activo }} </p>
-                        <p>Número de años: {{ prestamo.numero_de_años }}</p>
-                        <p>Frecuencia de pago: {{ frecuencia_pago }}</p>
-                        <p>Nª días del año: {{ dias_del_ano }}</p>
-                        <p>{{ prestamo.tipo_tasa_interes }}: {{ prestamo.tasa_de_interes }} %</p>
-                        <p>IGV: {{ IGV }} %</p>
-                        <p>IR: {{ impuesto_renta }} %</p>
-                        <p>Recompra: {{ prestamo.recompra }} %</p>
+                        <p><strong>Precio de venta del activo:</strong> S/ {{ prestamo.precio_venta_del_activo }} </p>
+                        <p><strong>Número de años:</strong> {{ prestamo.numero_de_años }}</p>
+                        <p><strong>Frecuencia de pago:</strong> {{ frecuencia_pago }}</p>
+                        <p><strong>Nª días del año:</strong> {{ dias_del_ano }}</p>
+                        <p><strong>{{ prestamo.tipo_tasa_interes }}:</strong> {{ prestamo.tasa_de_interes }} %</p>
+                        <p><strong>IGV:</strong> {{ IGV }} %</p>
+                        <p><strong>IR:</strong> {{ impuesto_renta }} %</p>
+                        <p><strong>Recompra:</strong> {{ prestamo.recompra }} %</p>
                     </div>
                 </div>
                 <hr>
                 <div class = "row">
-                    <div class="col-md-6">
+                    <div class="col-md-4 text-center">
                         <h4><strong>Costos iniciales:</strong></h4><br>
-                        <p>Costes notariales: S/ {{ prestamo.costos_notariales }} </p>
-                        <p>Costes registrales: S/ {{ prestamo.costos_registrales }} </p>
-                        <p>Tasación: S/ {{ prestamo.tasacion }} </p>
-                        <p>Comisión de estudio: S/ {{ prestamo.comision_de_estudio }} </p>
-                        <p>Comisión de activación: S/ {{ prestamo.comision_de_activacion }} </p>
+                        <p><strong>Costes notariales:</strong> S/ {{ prestamo.costos_notariales }} </p>
+                        <p><strong>Costes registrales:</strong> S/ {{ prestamo.costos_registrales }} </p>
+                        <p><strong>Tasación:</strong> S/ {{ prestamo.tasacion }} </p>
+                        <p><strong>Comisión de estudio:</strong> S/ {{ prestamo.comision_de_estudio }} </p>
+                        <p><strong>Comisión de activación:</strong> S/ {{ prestamo.comision_de_activacion }} </p>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4 text-center">
                         <h4><strong>Costos periódicos:</strong></h4><br>
-                        <p>Comisión periódica: S/. {{ prestamo.comision_periodica }}</p>
-                        <p>Seguro de riesgo: {{ prestamo.seguro_riesgo }} %</p>
+                        <p><strong>Comisión periódica:</strong> S/ {{ prestamo.comision_periodica }}</p>
+                        <p><strong>Seguro de riesgo:</strong> {{ prestamo.seguro_riesgo }} %</p>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4 text-center">
                         <h4><strong>Costo de oportunidad:</strong></h4><br>
-                        <p>Tasa de descuento Ks: {{ prestamo.tasa_descuento_Ks }} %</p>
-                        <p>Tasa de descuento WACC: {{ prestamo.tasa_descuento_WACC }} %</p>
+                        <p><strong>Tasa de descuento Ks:</strong> {{ prestamo.tasa_descuento_Ks }} %</p>
+                        <p><strong>Tasa de descuento WACC:</strong> {{ prestamo.tasa_descuento_WACC }} %</p>
                         <br>
                         <br>
-                        <form style="margin-bottom:20px;" method='POST' action=''>
-                            {% csrf_token %}
-                            <input class="btn btn-primary btn-md" type="submit" name= "PDFentrada" value="Guardar PDF">
-                        </form>
+                        
                     </div>
+                </div>
+                <div >
+                    <form class="center-block" style="margin-bottom:20px;" method='POST' action=''>
+                        {% csrf_token %}
+                        <div class="text-center">
+                            <input class="btn btn-primary btn-md " style="width: 50%;" type="submit" name= "PDFentrada" value="Guardar PDF">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -199,46 +205,53 @@
             </header>
             <div class="content-section" style="margin-bottom:80px;">
                 <div class = "row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-center">
                         <h4><strong>Del arrendamiento:</strong></h4><br>
-                        <p>IGV del activo: S/. {{ IGV_del_activo|floatformat:2 }} </p>
-                        <p>Valor venta del activo: S/. {{ valor_de_venta_a|floatformat:2 }} </p>
-                        <p>Monto del leasing: S/. {{ monto_del_leasing|floatformat:2 }} </p>
-                        <p>TEP: {{ TEP|floatformat:4 }} %</p>
-                        <p>Nº cuotas por año: {{ numero_cuotas_por_ano }} </p>
-                        <p>Nº total de cuotas {{ nCuotas }} </p>
+                        <p><strong>IGV del activo:</strong> S/ {{ IGV_del_activo|floatformat:2 }} </p>
+                        <p><strong>Valor venta del activo:</strong> S/ {{ valor_de_venta_a|floatformat:2 }} </p>
+                        <p><strong>Monto del leasing:</strong> S/ {{ monto_del_leasing|floatformat:2 }} </p>
+                        <p><strong>TEP:</strong> {{ TEP|floatformat:4 }} %</p>
+                        <p><strong>Nº cuotas por año:</strong> {{ numero_cuotas_por_ano }} </p>
+                        <p><strong> Nº total de cuotas: </strong> {{ nCuotas }} </p>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-center">
                         <h4><strong>Gastos periódicos:</strong></h4><br>
-                        <p>Seguro riesgo: S/. {{ s_riesgo }} </p>
+                        <p><strong>Seguro riesgo:</strong> S/ {{ s_riesgo }} </p>
                     </div>
                 </div>
                 <hr>
                 <div class = "row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-center">
                         <h4><strong>Totales por:</strong></h4><br>
-                        <p>Intereses: S/. {{ intereses|floatformat:2 }} </p>
-                        <p>Amoritzación del capital: S/. {{ amortizacion_c|floatformat:2 }} </p>
-                        <p>Seguro contra todo riesgo: S/. {{ seguro_ctr }} </p>
-                        <p>Comisiones periódicas: S/. {{ comisiones_p }} </p>
-                        <p>Recompra: S/. {{ recompra_t|floatformat:2 }} </p>
-                        <p>Desembolso total: S/. {{ desembolso_t|floatformat:2 }} </p>
+                        <p><strong>Intereses:</strong> S/ {{ intereses|floatformat:2 }} </p>
+                        <p><strong>Amoritzación del capital: </strong>S/ {{ amortizacion_c|floatformat:2 }} </p>
+                        <p><strong>Seguro contra todo riesgo:</strong> S/ {{ seguro_ctr }} </p>
+                        <p><strong>Comisiones periódicas:</strong> S/ {{ comisiones_p }} </p>
+                        <p><strong>Recompra:</strong> S/ {{ recompra_t|floatformat:2 }} </p>
+                        <p><strong> Desembolso total: </strong>S/ {{ desembolso_t|floatformat:2 }} </p>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 text-center">
                         <h4><strong>Indicadores de rentabilidad:</strong></h4><br>
-                        <p>TCEA flujo bruto: {{ TCEA_fb|floatformat:2 }} %</p>
-                        <p>TCEA flujo neto: {{ TCEA_fn|floatformat:2 }} %</p>
-                        <p>VAN flujo bruto: S/. {{ VAN_fb|floatformat:2 }} </p>
-                        <p>VAN flujo neto: S/. {{ VAN_fn|floatformat:2 }} </p>
+                        <p><strong>TCEA flujo bruto:</strong> {{ TCEA_fb|floatformat:2 }} %</p>
+                        <p><strong>TCEA flujo neto:</strong> {{ TCEA_fn|floatformat:2 }} %</p>
+                        <p><strong>VAN flujo bruto:</strong> S/ {{ VAN_fb|floatformat:2 }} </p>
+                        <p><strong> VAN flujo neto:</strong> S/ {{ VAN_fn|floatformat:2 }} </p>
                         <br>
-                        <form style="margin-bottom:20px;" method='POST' action=''>
-                            {% csrf_token %}
-                            <input class="btn btn-primary btn-md" type="submit" name= "PDResultado" value="Guardar PDF">
-                        </form>
+                        
                     </div>
+                    
+                </div>
+                <div >
+                    <form style="margin-bottom:20px;" method='POST' action=''>
+                        {% csrf_token %}
+                        <div class="text-center">
+                        <input class="btn btn-primary btn-md"  style="width: 50%;" type="submit" name= "PDResultado" value="Guardar PDF">
+                        </div>
+                    </form>  
                 </div>
             </div>
         </div>
+        
     </div>
     
 {% endblock content %}
