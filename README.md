@@ -9,8 +9,8 @@ enter the following commands in your terminal:</br>
 <li>pip install django-crispy-forms</li>
 <li>pip install Pillow</li>
 <li>pip install reportlab</li>
-<li>pip install pip install PyPDF2</li>
-<li>pip install django-numpy</li>
+<li>pip install PyPDF2</li>
+<li>python -m pip install --user numpy</li>
 </ul>
 
 You can run the website with the following command: python manage.py runserver. Enter this url in your browser: http://localhost:8000
