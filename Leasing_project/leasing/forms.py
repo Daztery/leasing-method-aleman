@@ -2,7 +2,12 @@ from django import forms
 from .models import Prestamo
 
 class PrestamoForm(forms.ModelForm):
-
+    empresa_ofertante=forms.CharField(widget=forms.TextInput(
+        attrs={
+            'class':'pad-custom'
+        }
+    ))
+    
     class Meta:
         model = Prestamo
         fields = ['empresa_ofertante', 'empresa_solicitante', 'precio_venta_del_activo', 'numero_de_años',

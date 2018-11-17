@@ -1,19 +1,219 @@
 {% extends "leasing/base.html" %}
 {% load crispy_forms_tags %}
+<link rel="stylesheet" type="text/css" href="leasing/custom.css">
 {% block content %}
+    
     <header style="background-color:#150250" class="p-3 text-white text-center">
         <h5 style="color: white;">Nuevo Leasing</h5>
     </header>    
-    <div class="content-section">
+    <div class="content-section" style="margin-bottom:100px;">
         <form method="POST">
             {% csrf_token %}
-                <fieldset class="form-group">
-                    {{ form|crispy }}
-                </fieldset>
-            <div class="from-group" style="padding-bottom:100px;">
-                <button class="btn btn-primary btn-md" type="submit">Confirmar</button>
-                <a class="btn btn-danger btn-md"  href="{% url 'leasing-home' %}">Cancelar</a>
-            </div>
+                    <!--{{ form|crispy }}-->
+                <div class="container"> 
+                    <div id="prompt1" class="alert alert-danger" style="display: none;">
+                        {{ 'La tasa efectiva no tiene periodo de capitalización, por favor seleccione ninguno.' }}
+                    </div>
+                    <div id="prompt2" class="alert alert-danger" style="display: none;">
+                        <label id='label1'>mensaje</label>
+                    </div>
+                    <div class="row ">
+                        <div class="col-sm" style="padding-top: 16px;">
+                            <div class="form-group pad-custom">
+                                {{ form.empresa_ofertante}}
+                                <label class="form-control-placeholder">Empresa Ofertante</label>
+                            </div>
+                        </div>
+                        <div class="col-sm ">
+                            <div class="pad-custom">
+                                <label class="label-custom"><strong>Empresa Soliciante</strong></label>
+                                {{ form.empresa_solicitante}}
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                {{ form.precio_venta_del_activo}}
+                                <label class="form-control-placeholder" >Precio venta del activo</label>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                {{ form.numero_de_años}}
+                                <label class="form-control-placeholder" >Numero de años</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm ">
+                                <label><strong> Frecuencia de pago</strong></label>
+                                {{ form.frecuencia_de_pago}}
+                            </div>
+                            <div class="col-sm ">
+                                <label><strong>Tipo de pago</strong></label>
+                                {{ form.tipo_de_pago}}
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <label><strong> Tipo de tasa de interes</strong></label>
+                                {{ form.tipo_tasa_interes}}
+                            </div>
+                            <div class="col-sm">
+                                <label><strong>Periodo de capitalizacion</strong></label>
+                                {{ form.periodo_cap}}
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.tasa_de_interes}}
+                                    <label class="form-control-placeholder" >Tasa de interes</label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.recompra}}
+                                    <label class="form-control-placeholder" >Recompra</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.costos_notariales}}
+                                    <label class="form-control-placeholder" >Costos notariales</label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.costos_registrales}}
+                                    <label class="form-control-placeholder" >Costos registrales</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.tasacion}}
+                                    <label class="form-control-placeholder" >Tasacion</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.comision_de_estudio}}
+                                    <label class="form-control-placeholder" >Comision de estudio</label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.comision_de_activacion}}
+                                    <label class="form-control-placeholder" >Comision de activacion</label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.comision_periodica}}
+                                    <label class="form-control-placeholder" >Comision periodica</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm" style="padding-top: 20px;">
+                                <div class="form-group" >
+                                    {{ form.seguro_riesgo}}
+                                    <label class="form-control-placeholder" >Seguro riesgo</label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                    <label style="margin-bottom:0px !important;"><strong>Fecha de Inicio</strong></label>
+                                    {{ form.fecha_inicio}}
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label><strong>Plazo de Gracia</strong></label>
+                                    {{ form.plazo_de_gracia}}
+                                </div>
+                            </div>
+                            <div class="col-sm " style="padding-top: 6px;">
+                                <div class="form-group">
+                                    {{ form.periodo_inicial_pg}}
+                                    <label class="form-control-placeholder" >Periodo inicial pg</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.tasa_descuento_Ks}}
+                                    <label class="form-control-placeholder">Tasa descuento Ks</label>
+                                </div>
+                            </div>
+                            <div class="col-sm " >
+                                <div class="form-group">
+                                    {{ form.tasa_descuento_WACC}}
+                                    <label class="form-control-placeholder">Tasa descuento WACC</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    {{ form.modelo}}
+                                    <label class="form-control-placeholder">Modelo</label>
+                                </div>
+                            </div>
+                            <div class="col-sm " >
+                                <div class="form-group">
+                                    {{ form.vehiculo}}
+                                    <label class="form-control-placeholder">Vehiculo</label>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="from-group" style="padding-bottom:70px; padding-top:30px;">
+                        <button class="btn btn-primary btn-md" type="submit">Confirmar</button>
+                        <a class="btn btn-danger btn-md"  href="{% url 'leasing-home' %}">Cancelar</a>
+                    </div>
+                </div>
         </form>
     </div>
+<script>
+    var message1 = document.getElementById('prompt1')
+    var message2 = document.getElementById('prompt2')
+    var label1 = document.getElementById('label1')
+    var tipo_tasa_interes = document.getElementById('id_tipo_tasa_interes')
+    var periodo_cap = document.getElementById('id_periodo_cap')
+    var numero_de_anos = document.getElementById('id_numero_de_años')
+    var frecuencia_de_pago = document.getElementById('id_frecuencia_de_pago')
+    var plazo_de_gracia = document.getElementById('id_plazo_de_gracia')
+    var periodo_inicial_pg = document.getElementById('id_periodo_inicial_pg')
+
+    var numero_cuotas_por_ano = 360/frecuencia_de_pago.value
+    var nCuotas = numero_cuotas_por_ano*numero_de_anos.value
+    var meses_antes_de_nCuotas = plazo_de_gracia.value/30
+
+    if(tipo_tasa_interes.value == 'TEA' && periodo_cap.value != 0) {
+        message1.style.display = ''
+    } else {
+        message1.style.display = 'none'
+    }
+
+    if((parseInt(periodo_inicial_pg.value) + 1 + parseInt(meses_antes_de_nCuotas) + 1 > nCuotas ||
+     periodo_inicial_pg.value < 1) && plazo_de_gracia.value != 0) {
+        label1.innerHTML = 'El periodo de gracia no puede exceder un número de ' + (Math.trunc(nCuotas)).toString() + ' cuotas ni ser menor a 1.';
+        message2.style.display = ''
+    } else {
+        message2.style.display = 'none'
+    }
+
+
+</script>
 {% endblock content %}
