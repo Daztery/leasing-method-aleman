@@ -21,7 +21,7 @@
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         <label style="display:inline-block">Buscar por periodo:</label>
-                        <input class ="text-center" style="margin-left:20px; width:30px; display:inline-block"  class="form-control" type="number" name="nPeriodo" value="1">
+                        <input class ="text-center form-control" maxlength="2" style="margin-left:20px; width:50px !important; display:inline-block"   type="number" name="nPeriodo" value="1">
                         <input style="margin-left:20px; display:inline-block" class="btn btn-primary btn-md" type="submit" name= "buscar" value="buscar">                 
                     </form>
                 </div>
@@ -29,9 +29,9 @@
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         <label style="display:inline-block">Filtrar entre periodos:</label>
-                        <input class ="text-center" style="margin-left:10px; width:30px; display:inline-block; margin-right:20px;" type="number" name="periodoI" value="1">
+                        <input class ="text-center" style="margin-left:10px; width:50px !important; display:inline-block; margin-right:20px;" type="number" name="periodoI" value="1">
                         <span>al</span>
-                        <input class ="text-center" style="margin-left:10px; width:30px; display:inline-block;" type="number" name="periodoF" value="2">
+                        <input class ="text-center" style="margin-left:10px; width:50px !important; display:inline-block;" type="number" name="periodoF" value="2">
                         <input style="margin-left:20px; display:inline-block" class="btn btn-primary btn-md" type="submit" name= "filtrar" value="filtrar">
                     </form>
                 </div>   
@@ -193,7 +193,7 @@
                     <form class="center-block" style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         <div class="text-center">
-                            <input class="btn btn-primary btn-md " style="width: 50%;" type="submit" name= "PDFentrada" value="Guardar PDF">
+                            <input class="btn btn-primary btn-md " style="width: 25%;" type="submit" name= "PDFentrada" value="Guardar PDF">
                         </div>
                     </form>
                 </div>
@@ -245,7 +245,7 @@
                     <form style="margin-bottom:20px;" method='POST' action=''>
                         {% csrf_token %}
                         <div class="text-center">
-                        <input class="btn btn-primary btn-md"  style="width: 50%;" type="submit" name= "PDResultado" value="Guardar PDF">
+                        <input class="btn btn-primary btn-md"  style="width: 25%;" type="submit" name= "PDResultado" value="Guardar PDF">
                         </div>
                     </form>  
                 </div>

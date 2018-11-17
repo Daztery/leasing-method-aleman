@@ -1,0 +1,43 @@
+
+.pad-custom{
+    margin-top: 20px;
+}
+
+.btn-custom-red{
+    background-color: #fff;
+    color: #ff3547 !important;
+    width: 25%;
+    font-weight: bold;
+}
+.btn-custom-green{
+    background-color: #00C851;
+    color: #fff !important;
+    width: 25%;
+    font-weight: bold;
+}
+
+
+.form-group {
+    position: relative ;
+    margin-bottom: 1.5rem ;
+  }
+  
+.form-control-placeholder {
+    position: absolute;
+    top: 0;
+    font-size: 20px !important;
+    color: black !important;
+    padding: 15px 0 0 10px;
+    transition: all 200ms;
+    opacity: 0.5;
+    font-weight: bold;
+}
+
+
+.form-control:focus + .form-control-placeholder,
+.form-control:valid + .form-control-placeholder {
+    font-size: 90% !important ;
+    transform: translate3d(0, -70%, 0);
+    color: black !important;
+    opacity: 1;
+}

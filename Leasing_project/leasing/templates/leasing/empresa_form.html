@@ -1,18 +1,56 @@
 {% extends "leasing/base.html" %}
 {% load crispy_forms_tags %}
+<link rel="stylesheet" type="text/css" href="leasing/custom.css">
 {% block content %}
+ 
     <header style="background-color:#150250" class="p-3 text-white text-center">
         <h5 style="color: white;">Nueva Empresa</h5>
     </header>    
     <div class="content-section">
         <form method="POST">
             {% csrf_token %}
-            <fieldset class="form-group">
-                {{ form|crispy }}
-            </fieldset>
-            <div class="from-group d-flex justify-content-center" style="padding-bottom:100px;">
-                <a class="btn btn-danger btn-md" style="width: 50%;"  href="{% url 'empresa-home' %}">Cancelar</a>
-                <button class="btn btn-success btn-md" style="width: 50%;" type="submit">Registrar Empresa</button>
+                <!--{{ form|crispy }}-->
+                <div class="row ">
+                    <div class="col-sm" >
+                        <div class="form-group pad-custom">
+                            {{form.nombre_empresa}}
+                            <label class="form-control-placeholder">Nombre de la Empresa</label>
+                        </div>
+                    </div>
+                    <div class="col-sm" >
+                        <div class="form-group pad-custom">
+                            {{form.razon_social}}
+                            <label class="form-control-placeholder">Razon Social</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-sm" >
+                        <div class="form-group pad-custom">
+                            {{form.ciudad}}
+                            <label class="form-control-placeholder">Ciudad</label>
+                        </div>
+                    </div>
+                    <div class="col-sm" >
+                        <div class="form-group pad-custom">
+                            {{form.ruc}}
+                            <label class="form-control-placeholder">RUC</label>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="row ">
+                    <div class="col-sm" >
+                        <div class="form-group pad-custom">
+                            {{form.telefono}}
+                            <label class="form-control-placeholder">Telefono</label>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="from-group text-right" style="padding-bottom:100px;">
+                <a class="btn btn-custom-red"   href="{% url 'empresa-home' %}">Cancelar</a>
+                <button class="btn btn-custom-green"  type="submit">Registrar Empresa</button>
             </div>
         </form>
     </div>

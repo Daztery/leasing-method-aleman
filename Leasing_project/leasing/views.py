@@ -326,6 +326,7 @@ class PrestamoCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+    success_url = '/'
 
 class PrestamoUpdateView(LoginRequiredMixin, UpdateView):
     model = Prestamo
@@ -346,6 +347,7 @@ class EmpresaListView(LoginRequiredMixin, ListView):
     model = Empresa
     template_name = 'leasing/empresa_list.html'
     context_object_name= 'empresas'
+
 
 class EmpresaCreateView(LoginRequiredMixin, CreateView):
     model = Empresa

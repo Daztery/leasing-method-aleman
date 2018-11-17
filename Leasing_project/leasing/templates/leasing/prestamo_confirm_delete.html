@@ -9,11 +9,11 @@
             {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Eliminar Leasing</legend>
-                <h2>¿Está seguro que desea eliminar el leasing? LAP-Sol-{{ object.id }}</h2>
+                <h2 class=" text-center">¿Está seguro que desea eliminar el LEASING "LAP-Sol-{{ object.id }}"? </h2>
             </fieldset>
             <div class="from-group d-flex justify-content-center" style="padding-bottom:100px;">
-                <a class="btn btn-danger btn-md"  style="width: 50%;" href="{% url 'leasing-home' %}">Cancelar</a>
-                <button class="btn btn-success btn-md" style="width: 50%;" type="submit">Confirmar</button>
+                <a class="btn btn-custom-red"  href="{% url 'leasing-home' %}">Cancelar</a>
+                <button class="btn btn-danger" style="width: 30%;" type="submit">Eliminar</button>
             </div>
         </form>
     </div>
